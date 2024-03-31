@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FoodTracker</string>
+    <string name="calendar">Calendar</string>
+    <string name="recipes">Recipes</string>
+    <string name="shopping_list">Shopping List</string>
+
+</resources>
