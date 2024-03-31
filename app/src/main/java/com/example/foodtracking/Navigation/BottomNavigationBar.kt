@@ -1,31 +1,21 @@
-package com.example.foodtracking
+package com.example.foodtracking.Navigation
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
-
-object ScreenRoutes {
-    const val RECIPES = "recipes"
-    const val SHOPPING_LIST = "shopping_list"
-    const val CALENDAR = "calendar"
-}
 
 class BottomNavigationItem(
     val title: String,
