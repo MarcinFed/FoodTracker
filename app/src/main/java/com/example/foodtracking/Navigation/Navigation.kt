@@ -11,7 +11,7 @@ import com.example.foodtracking.Screens.ShoppingListScreen
 @Composable
 fun Navigation(DinnersViewModel: DinnersViewModel, ShoppingListViewModel: ShoppingListViewModel, CalendarViewModel: CalendarViewModel){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.RecipesScreen.route){
+    NavHost(navController = navController, startDestination = Screen.ShoppingListScreen.route){
         composable(route = Screen.RecipesScreen.route){
             RecipesScreen(DinnersViewModel, navController)
         }
