@@ -5,11 +5,15 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,25 +61,34 @@ data class BottomNavigationItem(
 @Composable
 fun BottomNavItem(
     item: BottomNavigationItem,
-    isSelected: Boolean
+    isSelected: Boolean,
 ) {
-    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 56.dp else 48.dp)
-    val animatedElevation by animateDpAsState(targetValue = if (isSelected) 10.dp else 0.dp)
+    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 30.dp else 24.dp)
     val animatedAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0.5f)
+    val paddingBetweenIconAndLabel = 4.dp // Adjust the space between the icon and label
 
     Box(
         modifier = Modifier
-            .padding(4.dp)
             .clip(RoundedCornerShape(10.dp))
             .height(animatedHeight)
             .alpha(animatedAlpha),
         contentAlignment = Alignment.Center
     ) {
-        FlipIcon(
-            isSelected = isSelected,
-            activeIcon = item.selectedIcon,
-            inactiveIcon = item.unselectedIcon,
-            modifier = Modifier.size(24.dp)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            FlipIcon(
+                isSelected = isSelected,
+                activeIcon = item.selectedIcon,
+                inactiveIcon = item.unselectedIcon,
+                modifier = Modifier.size(24.dp)
+            )
+            if (isSelected) {
+                Spacer(Modifier.width(paddingBetweenIconAndLabel)) // Adjust spacing between icon and label
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
     }
 }

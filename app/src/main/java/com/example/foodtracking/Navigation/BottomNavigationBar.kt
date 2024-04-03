@@ -47,13 +47,12 @@ fun BottomNavigationBar() {
                     .border(width = 1.dp, color = Color.Gray)
             ) {
                 NavigationBar (
-                    modifier = Modifier.height(56.dp).fillMaxWidth()
+                    modifier = Modifier.height(70.dp).fillMaxWidth()
                 ) {
                     BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
                         val isSelected = navigationItem.route == currentDestination?.route
                         NavigationBarItem(
                             icon = { BottomNavItem(navigationItem, isSelected) },
-
                             selected = isSelected,
                             onClick = {
                                 navController.navigate(navigationItem.route) {
