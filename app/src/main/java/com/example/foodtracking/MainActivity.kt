@@ -25,26 +25,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FoodTrackingTheme {
-                val items = listOf(
-                    BottomNavigationItem(
-                        title = "Recipes",
-                        selectedIcon = R.drawable.recipes_filled,
-                        unselectedIcon = R.drawable.recipes_outlined,
-                        route = "recipes"
-                    ),
-                    BottomNavigationItem(
-                        title = "Shopping List",
-                        selectedIcon = R.drawable.list_filled,
-                        unselectedIcon = R.drawable.list_outlined,
-                        route = "shopping_list"
-                    ),
-                    BottomNavigationItem(
-                        title = "Calendar",
-                        selectedIcon = R.drawable.calendar_filled,
-                        unselectedIcon = R.drawable.calendar_outlined,
-                        route = "calendar"
-                    )
-                )
                 var selectedItem by remember { mutableStateOf(items.first()) }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
