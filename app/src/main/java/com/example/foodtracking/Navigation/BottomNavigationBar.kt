@@ -30,13 +30,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Screens.CalendarScreen
 import com.example.foodtracking.Screens.RecipesScreen
 import com.example.foodtracking.Screens.ShoppingListScreen
 
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(
+    listViewModel: ListViewModel
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -87,7 +90,7 @@ fun BottomNavigationBar() {
                 RecipesScreen(NavController = navController)
             }
             composable(Screen.ShoppingListScreen.route) {
-                ShoppingListScreen(NavController = navController)
+                ShoppingListScreen(listViewModel)
             }
             composable(Screen.CalendarScreen.route) {
                 CalendarScreen(NavController = navController)

@@ -1,6 +1,7 @@
 package com.example.foodtracking
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.foodtracking.Databases.ShoppingList.ListViewModel
+import com.example.foodtracking.Databases.ShoppingList.ListViewModelFactory
 import com.example.foodtracking.Navigation.BottomNavigationBar
 import com.example.foodtracking.Navigation.BottomNavigationItem
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
@@ -25,13 +30,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FoodTrackingTheme {
+                val listViewModel: ListViewModel = viewModel(
+                    factory = ListViewModelFactory(LocalContext.current.applicationContext as Application)
+                )
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
                         bottomBar = {
-                            BottomNavigationBar()
+                            BottomNavigationBar(listViewModel)
                         }
                     ){
 

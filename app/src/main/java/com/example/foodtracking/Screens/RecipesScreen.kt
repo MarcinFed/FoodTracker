@@ -20,7 +20,7 @@ import com.example.foodtracking.ui.theme.FoodTrackingTheme
 fun RecipesScreen(
     NavController: NavController
     //, DinnersViewModel: DinnersViewModel
-){
+) {
     FoodTrackingTheme {
         Surface(
             modifier = Modifier.fillMaxSize().padding(15.dp),
