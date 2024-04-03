@@ -8,6 +8,8 @@ import com.example.foodtracking.Screens.CalendarScreen
 import com.example.foodtracking.Screens.RecipesScreen
 import com.example.foodtracking.Screens.ShoppingListScreen
 
+
+//Nowy brunch
 @Composable
 fun Navigation(
     //DinnersViewModel: DinnersViewModel, ShoppingListViewModel: ShoppingListViewModel, CalendarViewModel: CalendarViewModel
