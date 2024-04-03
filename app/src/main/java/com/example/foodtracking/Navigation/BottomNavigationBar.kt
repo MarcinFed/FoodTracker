@@ -20,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -42,29 +44,36 @@ fun BottomNavigationBar() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            Box(
+            // Drawing a line above the navigation bar
+            NavigationBar(
                 modifier = Modifier
-                    .border(width = 1.dp, color = Color.Gray)
-            ) {
-                NavigationBar (
-                    modifier = Modifier.height(70.dp).fillMaxWidth()
-                ) {
-                    BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
-                        val isSelected = navigationItem.route == currentDestination?.route
-                        NavigationBarItem(
-                            icon = { BottomNavItem(navigationItem, isSelected) },
-                            selected = isSelected,
-                            onClick = {
-                                navController.navigate(navigationItem.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
+                    .height(60.dp)
+                    .fillMaxWidth()
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx() // Thickness of the line
+                        drawLine(
+                            Color.Gray, // Color of the line
+                            start = Offset(x = 0f, y = 0f), // Start point of the line (top left)
+                            end = Offset(x = size.width, y = 0f), // End point of the line (top right)
+                            strokeWidth = strokeWidth
                         )
                     }
+            ) {
+                BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
+                    val isSelected = navigationItem.route == currentDestination?.route
+                    NavigationBarItem(
+                        icon = { BottomNavItem(navigationItem, isSelected) },
+                        selected = isSelected,
+                        onClick = {
+                            navController.navigate(navigationItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    )
                 }
             }
         }
