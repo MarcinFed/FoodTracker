@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
 @Composable
-fun RecipesScreen(NavController: NavController, DinnersViewModel: DinnersViewModel){
+fun RecipesScreen(
+    NavController: NavController
+    //, DinnersViewModel: DinnersViewModel
+){
     //TODO
 }

@@ -9,17 +9,25 @@ import com.example.foodtracking.Screens.RecipesScreen
 import com.example.foodtracking.Screens.ShoppingListScreen
 
 @Composable
-fun Navigation(DinnersViewModel: DinnersViewModel, ShoppingListViewModel: ShoppingListViewModel, CalendarViewModel: CalendarViewModel){
+fun Navigation(
+    //DinnersViewModel: DinnersViewModel, ShoppingListViewModel: ShoppingListViewModel, CalendarViewModel: CalendarViewModel
+){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.ShoppingListScreen.route){
         composable(route = Screen.RecipesScreen.route){
-            RecipesScreen(DinnersViewModel, navController)
+            RecipesScreen(
+                //DinnersViewModel,
+                navController)
         }
         composable(route = Screen.ShoppingListScreen.route){
-            ShoppingListScreen(ShoppingListViewModel, navController)
+            ShoppingListScreen(
+                //ShoppingListViewModel,
+                navController)
         }
         composable(route = Screen.CalendarScreen.route){
-            CalendarScreen(CalendarViewModel, navController)
+            CalendarScreen(
+                //CalendarViewModel,
+                navController)
         }
     }
 }
