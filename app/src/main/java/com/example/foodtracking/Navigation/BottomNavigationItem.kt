@@ -59,13 +59,13 @@ fun BottomNavItem(
     item: BottomNavigationItem,
     isSelected: Boolean
 ) {
-    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 56.dp else 48.dp)
+    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 30.dp else 24.dp)
     val animatedElevation by animateDpAsState(targetValue = if (isSelected) 10.dp else 0.dp)
     val animatedAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0.5f)
 
     Box(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(0.dp)
             .clip(RoundedCornerShape(10.dp))
             .height(animatedHeight)
             .alpha(animatedAlpha),
