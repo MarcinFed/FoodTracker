@@ -25,21 +25,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FoodTrackingTheme {
-                var selectedItem by remember { mutableStateOf(items.first()) }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
                         bottomBar = {
-                            BottomNavigationBar(
-                                items = items,
-                                selectedItem = selectedItem,
-                                onItemSelected = { selectedItem = it }
-                            )
+                            BottomNavigationBar()
                         }
-                    ) {
-                        // Content
+                    ){
+
                     }
                 }
             }

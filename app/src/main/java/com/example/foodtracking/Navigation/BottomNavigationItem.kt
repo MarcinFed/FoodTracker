@@ -16,19 +16,19 @@ data class BottomNavigationItem(
                 title = "Recipes",
                 selectedIcon = R.drawable.recipes_filled,
                 unselectedIcon = R.drawable.recipes_outlined,
-                route = "recipes"
+                route = Screen.RecipesScreen.route
             ),
             BottomNavigationItem(
                 title = "Shopping List",
                 selectedIcon = R.drawable.list_filled,
                 unselectedIcon = R.drawable.list_outlined,
-                route = "shopping_list"
+                route = Screen.ShoppingListScreen.route
             ),
             BottomNavigationItem(
                 title = "Calendar",
                 selectedIcon = R.drawable.calendar_filled,
                 unselectedIcon = R.drawable.calendar_outlined,
-                route = "calendar"
+                route = Screen.CalendarScreen.route
             )
         )
     }
