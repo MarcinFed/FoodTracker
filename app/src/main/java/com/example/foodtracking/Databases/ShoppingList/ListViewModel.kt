@@ -15,6 +15,7 @@ class ListViewModel(
     fun insertItem(item: ListItem) = listRepository.addItem(item)
     fun deleteItem(item: ListItem) = listRepository.deleteItem(item)
     fun modifyItem(id: Int, productName: String, amount: Int, bought: Boolean) = listRepository.modifyItem(id, productName, amount, bought)
+    fun checkItem(id: Int, bought: Boolean) = listRepository.checkItem(id, bought)
 }
 
 class ListViewModelFactory(

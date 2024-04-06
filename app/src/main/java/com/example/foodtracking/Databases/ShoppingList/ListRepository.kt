@@ -22,4 +22,10 @@ class ListRepository (
         modifiedItem.id = id
         listDao?.update(modifiedItem)
     }
+
+    fun checkItem(id: Int, Bought: Boolean) {
+        val item = listDao?.getItem(id)
+        item?.Bought = Bought
+        listDao?.update(item!!)
+    }
 }

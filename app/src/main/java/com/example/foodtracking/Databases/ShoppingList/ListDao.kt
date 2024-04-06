@@ -25,4 +25,7 @@ interface ListDao {
     @Update
     fun update(item: ListItem): Int
 
+    @Query("SELECT * FROM list_table WHERE id = :id")
+    fun getItem(id: Int): ListItem
+
 }
