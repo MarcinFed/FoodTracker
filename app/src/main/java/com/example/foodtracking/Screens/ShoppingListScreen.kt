@@ -1,5 +1,6 @@
 package com.example.foodtracking.Screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +47,7 @@ import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
 import com.example.foodtracking.ui.theme.MyTextField
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun ShoppingListScreen(listViewModel: ListViewModel) {
     val shoppingList by listViewModel.getAllItems()!!.collectAsState(initial = emptyList())
@@ -69,7 +71,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                         itemsIndexed(shoppingList) { index, item ->
                             var itemText by remember {
                                 mutableStateOf(
-                                    if (item.Amount > 1) "${item.Product} X ${item.Amount}" else item.Product
+                                    if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
                                 )
                             }
 
@@ -97,9 +99,6 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                         value = itemText,
                                         onValueChange = { updatedText ->
                                             itemText = updatedText
-                                            // Update your model when text changes, if needed
-                                            // This is a simplified example. In a real app, you'd likely need to parse
-                                            // the updatedText back into Product and Amount, then call modifyItem.
                                         },
                                         modifier = Modifier
                                             .padding(start = 8.dp, end = 12.dp)
@@ -113,12 +112,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                         singleLine = true,
                                         keyboardActions = KeyboardActions(onDone = {
                                             keyboardController?.hide()
-                                            // Assuming modifyItem updates both the product name and the amount.
-                                            // You'll need to extract the product name and amount from itemText.
-                                            // Here's a placeholder for the extraction logic.
-                                            val productName =
-                                                itemText // Placeholder, extract actual name
-                                            val amount = 1 // Placeholder, extract actual amount
+                                            val (productName, amount) = parseItemInput(itemText)
                                             listViewModel.modifyItem(
                                                 item.id,
                                                 productName,
@@ -130,43 +124,61 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                 }
                             }
                         }
-                    }
-                    CompositionLocalProvider(
-                        LocalTextSelectionColors provides customTextSelectionColors,
-                    ) {
-                        OutlinedTextField(
-                            colors = MyTextField(),
-                            value = newText,
-                            onValueChange = { newText = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 8.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .border(
-                                    width = 1.dp,
-                                    color = Color.Gray,
-                                    shape = RoundedCornerShape(8.dp)),
-                            placeholder = { Text("Add new item") },
-                            singleLine = true,
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            keyboardActions = KeyboardActions(onDone = {
-                                keyboardController?.hide()
-                                if (newText.isNotBlank()) {
-                                    // Assuming ListItem constructor accepts product name, amount, and bought status.
-                                    listViewModel.insertItem(
-                                        ListItem(
-                                            newText,
-                                            1,
-                                            false
+                        item {
+                            CompositionLocalProvider(
+                                LocalTextSelectionColors provides customTextSelectionColors,
+                            ) {
+                                OutlinedTextField(
+                                    colors = MyTextField(),
+                                    value = newText,
+                                    onValueChange = { newText = it },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = 8.dp,
+                                            end = 12.dp,
+                                            top = 8.dp,
+                                            bottom = 8.dp
                                         )
-                                    ) // Adjust parameters as necessary.
-                                    newText = ""
-                                }
-                            })
-                        )
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .border(
+                                            width = 1.dp,
+                                            color = Color.Gray,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ),
+                                    placeholder = { Text("Add new item") },
+                                    singleLine = true,
+                                    textStyle = MaterialTheme.typography.bodyLarge,
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        keyboardController?.hide()
+                                        if (newText.isNotBlank()) {
+                                            val (productName, amount) = parseItemInput(newText)
+                                            listViewModel.insertItem(
+                                                ListItem(productName, amount, false)
+                                            )
+                                            newText = ""
+                                        }
+                                    })
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
+
+fun parseItemInput(input: String): Pair<String, Int> {
+    val regex = Regex("^(.+?)\\s*[xX](\\d+)$|^(.+?)\\s+(\\d+)$")
+    val matchResult = regex.find(input)
+
+    return if (matchResult != null) {
+        // Check which group is matched for the quantity
+        val productName = matchResult.groups[1]?.value ?: matchResult.groups[3]?.value ?: ""
+        val quantityString = matchResult.groups[2]?.value ?: matchResult.groups[4]?.value ?: "1"
+        productName.trim() to quantityString.toInt()
+    } else {
+        input.trim() to 1 // Default quantity is 1 if not specified
+    }
+}
