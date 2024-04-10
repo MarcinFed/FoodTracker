@@ -3,5 +3,10 @@
     <string name="calendar">Calendar</string>
     <string name="recipes">Recipes</string>
     <string name="shopping_list">Shopping List</string>
-
+    <string name="main_fab_rotation">Rotation</string>
+    <string name="float_icon">Float fab button</string>
+    <string name="main_fab_button">Main fab button</string>
+    <string name="delete">Delete selected</string>
+    <string name="select">Select all</string>
+    <string name="unselect">Unselect all</string>
 </resources>

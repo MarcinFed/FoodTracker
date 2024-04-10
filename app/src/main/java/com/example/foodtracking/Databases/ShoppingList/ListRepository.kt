@@ -28,4 +28,14 @@ class ListRepository (
         item?.Bought = Bought
         listDao?.update(item!!)
     }
+
+    fun checkAllItems(bought: Boolean){
+        listDao.checkAllItems(bought)
+    }
+
+    fun deleteCheckedItems(){
+        listDao.deleteCheckedItems()
+    }
+
+
 }

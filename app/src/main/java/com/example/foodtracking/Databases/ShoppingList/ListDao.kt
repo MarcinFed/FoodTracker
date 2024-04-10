@@ -28,4 +28,9 @@ interface ListDao {
     @Query("SELECT * FROM list_table WHERE id = :id")
     fun getItem(id: Int): ListItem
 
+    @Query("UPDATE list_table SET bought = :bought")
+    fun checkAllItems(bought: Boolean)
+
+    @Query("DELETE FROM list_table WHERE bought = 1")
+    fun deleteCheckedItems()
 }

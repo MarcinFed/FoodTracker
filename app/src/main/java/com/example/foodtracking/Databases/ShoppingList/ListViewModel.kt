@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class ListViewModel(
     application: Application,
@@ -12,10 +14,24 @@ class ListViewModel(
     private var listRepository: ListRepository = ListRepository(listDB!!.listDao())
 
     fun getAllItems() = listRepository.getData()
-    fun insertItem(item: ListItem) = listRepository.addItem(item)
-    fun deleteItem(item: ListItem) = listRepository.deleteItem(item)
-    fun modifyItem(id: Int, productName: String, amount: Int, bought: Boolean) = listRepository.modifyItem(id, productName, amount, bought)
-    fun checkItem(id: Int, bought: Boolean) = listRepository.checkItem(id, bought)
+    fun insertItem(item: ListItem) = viewModelScope.launch {
+        listRepository.addItem(item)
+    }
+    fun deleteItem(item: ListItem) = viewModelScope.launch {
+        listRepository.deleteItem(item)
+    }
+    fun modifyItem(id: Int, productName: String, amount: Int, bought: Boolean) = viewModelScope.launch {
+        listRepository.modifyItem(id, productName, amount, bought)
+    }
+    fun checkItem(id: Int, bought: Boolean) = viewModelScope.launch{
+        listRepository.checkItem(id, bought)
+    }
+    fun checkAllItems(bought: Boolean) = viewModelScope.launch {
+        listRepository.checkAllItems(bought)
+    }
+    fun deleteCheckedItems() = viewModelScope.launch {
+        listRepository.deleteCheckedItems()
+    }
 }
 
 class ListViewModelFactory(
