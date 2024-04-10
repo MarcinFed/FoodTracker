@@ -1,6 +1,7 @@
 package com.example.foodtracking.Screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -39,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +54,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -86,12 +89,15 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
         backgroundColor = Color(0xFFBEBEBE),
     )
 
+    val setShowDialog: (Boolean) -> Unit = { showDialogValue ->
+        showDialog = showDialogValue
+    }
+
     val overlayModifier = if (fabState.value == FabButtonState.Expand) {
         Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
-                    // This should set the state to Collapsed when the overlay is tapped
                     fabState.value = FabButtonState.Collapsed
                 })
             }
@@ -102,84 +108,16 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     }
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                               showDialog = false
-            },
-            title = {
-                Text(text = stringResource(id = R.string.confirm_delete))
-            },
-            text = {
-                Text(text = stringResource(id = R.string.delete_text))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        listViewModel.deleteCheckedItems()
-                        showDialog = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.confirm),
-                        color = Color.Black)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDialog = false
-                    }
-                ) {
-                    Text(stringResource(id = R.string.cancel),
-                        color = Color.Black)
-                }
-            }
-        )
+        ConfirmDeletionDialog(showDialog = showDialog, onDismiss = {showDialog = false}) {
+            listViewModel.deleteCheckedItems()
+            showDialog = false
+        }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            MultiFloatingActionButton(
-                items = listOf(
-                    FabButtonItem(
-                        iconRes = Icons.Filled.Check,
-                        label = stringResource(id = R.string.select),
-                        id = 0
-                    ),
-                    FabButtonItem(
-                        iconRes = Icons.Filled.Refresh,
-                        label = stringResource(id = R.string.unselect),
-                        id = 1
-                    ),
-                    FabButtonItem(
-                        iconRes = Icons.Filled.Delete,
-                        label = stringResource(id = R.string.delete),
-                        id = 2
-                    ),
-                ),
-                onFabItemClicked = { item ->
-                    when (item.id) {
-                        0 -> {
-                            listViewModel.checkAllItems(bought = true)
-                        }
-                        1 -> {
-                            listViewModel.checkAllItems(bought = false)
-                            fabState.value = FabButtonState.Collapsed
-                        }
-                        2 -> {
-                            if (listViewModel.itemsChecked())
-                                showDialog = true
-                            else
-                                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
-                            fabState.value = FabButtonState.Collapsed
-                        }
-                        else -> Toast.makeText(context, item.label, Toast.LENGTH_SHORT).show()
-                    }
-                },
-                fabIcon = FabButtonMain(),
-                fabOption = FabButtonSub(),
-                fabState = fabState
-            )
+            MultiFloatingActionButton(listViewModel, fabState, setShowDialog, context, toastText)
         }
     ) {
         Box(modifier = overlayModifier){
@@ -192,62 +130,8 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                 ) {
                     Column {
                         LazyColumn {
-                            itemsIndexed(shoppingList) { index, item ->
-                                var itemText by remember {
-                                    mutableStateOf(
-                                        if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Checkbox(
-                                        colors = CheckboxDefaults.colors(
-                                            checkedColor = Color(0xFF1683FB),
-                                        ),
-                                        checked = item.Bought,
-                                        onCheckedChange = { isChecked ->
-                                            listViewModel.checkItem(item.id, isChecked)
-                                            fabState.value = FabButtonState.Collapsed
-                                        }
-                                    )
-                                    CompositionLocalProvider(
-                                        LocalTextSelectionColors provides customTextSelectionColors,
-                                    ) {
-                                        OutlinedTextField(
-                                            colors = MyTextField(),
-                                            value = itemText,
-                                            onValueChange = { updatedText ->
-                                                itemText = updatedText
-                                            },
-                                            modifier = Modifier
-                                                .padding(start = 8.dp, end = 12.dp)
-                                                .weight(1f)
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .border(
-                                                    width = 1.dp,
-                                                    color = Color.Gray,
-                                                    shape = RoundedCornerShape(8.dp)
-                                                ),
-                                            textStyle = MaterialTheme.typography.bodyLarge,
-                                            singleLine = true,
-                                            keyboardActions = KeyboardActions(onDone = {
-                                                keyboardController?.hide()
-                                                val (productName, amount) = parseItemInput(itemText)
-                                                listViewModel.modifyItem(
-                                                    item.id,
-                                                    productName,
-                                                    amount,
-                                                    item.Bought
-                                                )
-                                            })
-                                        )
-                                    }
-                                }
+                            itemsIndexed(shoppingList) { _, item ->
+                                ShoppingListItem(item, listViewModel, customTextSelectionColors, fabState, keyboardController)
                             }
                             item {
                                 CompositionLocalProvider(
@@ -306,5 +190,146 @@ fun parseItemInput(input: String): Pair<String, Int> {
         productName.trim() to quantityString.toInt()
     } else {
         input.trim() to 1 // Default quantity is 1 if not specified
+    }
+}
+
+@Composable
+fun ConfirmDeletionDialog(showDialog: Boolean, onDismiss: () -> Unit, confirmAction: () -> Unit){
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(text = stringResource(id = R.string.confirm_delete))
+            },
+            text = {
+                Text(text = stringResource(id = R.string.delete_text))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = confirmAction
+                ) {
+                    Text(
+                        stringResource(id = R.string.confirm),
+                        color = Color.Black
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismiss
+
+                ) {
+                    Text(
+                        stringResource(id = R.string.cancel),
+                        color = Color.Black
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableState<FabButtonState>, setShowDialog: (Boolean) -> Unit, context: Context, toastText: String){
+    MultiFloatingActionButton(
+        modifier = Modifier.padding(end = 15.dp),
+        items = listOf(
+            FabButtonItem(
+                iconRes = Icons.Filled.Check,
+                label = stringResource(id = R.string.select),
+                id = 0
+            ),
+            FabButtonItem(
+                iconRes = Icons.Filled.Refresh,
+                label = stringResource(id = R.string.unselect),
+                id = 1
+            ),
+            FabButtonItem(
+                iconRes = Icons.Filled.Delete,
+                label = stringResource(id = R.string.delete),
+                id = 2
+            ),
+        ),
+        onFabItemClicked = { item ->
+            when (item.id) {
+                0 -> {
+                    listViewModel.checkAllItems(bought = true)
+                }
+                1 -> {
+                    listViewModel.checkAllItems(bought = false)
+                    fabState.value = FabButtonState.Collapsed
+                }
+                2 -> {
+                    if (listViewModel.itemsChecked())
+                        setShowDialog(true)
+                    else
+                        Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                    fabState.value = FabButtonState.Collapsed
+                }
+                else -> Toast.makeText(context, item.label, Toast.LENGTH_SHORT).show()
+            }
+        },
+        fabIcon = FabButtonMain(),
+        fabOption = FabButtonSub(),
+        fabState = fabState
+    )
+}
+
+@Composable
+fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSelectionColors: TextSelectionColors, fabState: MutableState<FabButtonState>, keyboardController: SoftwareKeyboardController?){
+    var itemText by remember {
+        mutableStateOf(
+            if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
+        )
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            colors = CheckboxDefaults.colors(
+                checkedColor = Color(0xFF1683FB),
+            ),
+            checked = item.Bought,
+            onCheckedChange = { isChecked ->
+                listViewModel.checkItem(item.id, isChecked)
+                fabState.value = FabButtonState.Collapsed
+            }
+        )
+        CompositionLocalProvider(
+            LocalTextSelectionColors provides customTextSelectionColors,
+        ) {
+            OutlinedTextField(
+                colors = MyTextField(),
+                value = itemText,
+                onValueChange = { updatedText ->
+                    itemText = updatedText
+                },
+                modifier = Modifier
+                    .padding(start = 8.dp, end = 12.dp)
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                textStyle = MaterialTheme.typography.bodyLarge,
+                singleLine = true,
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                    val (productName, amount) = parseItemInput(itemText)
+                    listViewModel.modifyItem(
+                        item.id,
+                        productName,
+                        amount,
+                        item.Bought
+                    )
+                })
+            )
+        }
     }
 }

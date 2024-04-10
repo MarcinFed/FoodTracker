@@ -3,6 +3,7 @@ package com.example.foodtracking.Screens.Fab
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
 interface FabButtonMain {
@@ -15,5 +16,5 @@ private class FabButtonMainImpl(
     override val iconRotate: Float?
 ) : FabButtonMain
 
-fun FabButtonMain(iconRes: ImageVector = Icons.Filled.Build, iconRotate: Float = 90f): FabButtonMain =
+fun FabButtonMain(iconRes: ImageVector = Icons.Filled.Settings, iconRotate: Float = 360f): FabButtonMain =
     FabButtonMainImpl(iconRes, iconRotate)

@@ -21,17 +21,22 @@ fun RecipesScreen(
     NavController: NavController
     //, DinnersViewModel: DinnersViewModel
 ) {
-    FoodTrackingTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize().padding(15.dp),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Text(
-                "Recipes Screen",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(vertical = 20.dp),
-                color = Color.Black
-            )
+    Scaffold {
+        FoodTrackingTheme {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Text(
+                    "Recipes Screen",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(vertical = 20.dp),
+                    color = Color.Black
+                )
+            }
         }
     }
+
 }
