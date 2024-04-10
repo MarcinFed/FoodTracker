@@ -33,4 +33,7 @@ interface ListDao {
 
     @Query("DELETE FROM list_table WHERE bought = 1")
     fun deleteCheckedItems()
+
+    @Query("SELECT COUNT(*) FROM list_table WHERE bought = 1")
+    fun itemsChecked(): Int
 }

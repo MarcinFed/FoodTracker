@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +34,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -76,6 +78,8 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     val context = LocalContext.current
     val fabState = rememberMultiFabState()
     val keyboardOpened = rememberKeyboardVisibilityState()
+    var showDialog by remember { mutableStateOf(false) }
+    val toastText = stringResource(id = R.string.no_itmes_toast)
 
     val customTextSelectionColors = TextSelectionColors(
         handleColor = Color.Black,
@@ -95,6 +99,41 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
 
     if (keyboardOpened) {
         fabState.value = FabButtonState.Collapsed
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                               showDialog = false
+            },
+            title = {
+                Text(text = stringResource(id = R.string.confirm_delete))
+            },
+            text = {
+                Text(text = stringResource(id = R.string.delete_text))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        listViewModel.deleteCheckedItems()
+                        showDialog = false
+                    }
+                ) {
+                    Text(stringResource(id = R.string.confirm),
+                        color = Color.Black)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(stringResource(id = R.string.cancel),
+                        color = Color.Black)
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -125,9 +164,14 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                         }
                         1 -> {
                             listViewModel.checkAllItems(bought = false)
+                            fabState.value = FabButtonState.Collapsed
                         }
                         2 -> {
-                            listViewModel.deleteCheckedItems()
+                            if (listViewModel.itemsChecked())
+                                showDialog = true
+                            else
+                                Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                            fabState.value = FabButtonState.Collapsed
                         }
                         else -> Toast.makeText(context, item.label, Toast.LENGTH_SHORT).show()
                     }
@@ -154,7 +198,6 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                         if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
                                     )
                                 }
-
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -217,7 +260,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(
-                                                start = 8.dp,
+                                                start = 12.dp,
                                                 end = 12.dp,
                                                 top = 8.dp,
                                                 bottom = 8.dp

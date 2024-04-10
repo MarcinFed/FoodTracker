@@ -32,6 +32,11 @@ class ListViewModel(
     fun deleteCheckedItems() = viewModelScope.launch {
         listRepository.deleteCheckedItems()
     }
+
+    fun itemsChecked() : Boolean {
+        return listRepository.itemsChecked()
+    }
+
 }
 
 class ListViewModelFactory(

@@ -37,5 +37,9 @@ class ListRepository (
         listDao.deleteCheckedItems()
     }
 
-
+    fun itemsChecked() : Boolean{
+        if (listDao.itemsChecked() > 0)
+            return true
+        return false
+    }
 }

@@ -9,4 +9,9 @@
     <string name="delete">Delete selected</string>
     <string name="select">Select all</string>
     <string name="unselect">Unselect all</string>
+    <string name="confirm_delete">Confirm delete action</string>
+    <string name="delete_text">Are you sure you want to delete the selected items?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_itmes_toast">Select items before deleting</string>
 </resources>
