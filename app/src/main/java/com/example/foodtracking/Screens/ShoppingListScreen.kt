@@ -3,6 +3,7 @@ package com.example.foodtracking.Screens
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -57,8 +59,11 @@ import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.R
 import com.example.foodtracking.Screens.Fab.FabButtonItem
 import com.example.foodtracking.Screens.Fab.FabButtonMain
+import com.example.foodtracking.Screens.Fab.FabButtonState
 import com.example.foodtracking.Screens.Fab.FabButtonSub
 import com.example.foodtracking.Screens.Fab.MultiFloatingActionButton
+import com.example.foodtracking.Screens.Fab.rememberMultiFabState
+import com.example.foodtracking.Screens.Keyboard.rememberKeyboardVisibilityState
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
 import com.example.foodtracking.ui.theme.MyTextField
 
@@ -69,11 +74,28 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     var newText by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
+    val fabState = rememberMultiFabState()
+    val keyboardOpened = rememberKeyboardVisibilityState()
 
     val customTextSelectionColors = TextSelectionColors(
         handleColor = Color.Black,
         backgroundColor = Color(0xFFBEBEBE),
     )
+
+    val overlayModifier = if (fabState.value == FabButtonState.Expand) {
+        Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    // This should set the state to Collapsed when the overlay is tapped
+                    fabState.value = FabButtonState.Collapsed
+                })
+            }
+    } else Modifier
+
+    if (keyboardOpened) {
+        fabState.value = FabButtonState.Collapsed
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -111,112 +133,116 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                     }
                 },
                 fabIcon = FabButtonMain(),
-                fabOption = FabButtonSub()
+                fabOption = FabButtonSub(),
+                fabState = fabState
             )
         }
     ) {
-        FoodTrackingTheme {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                Column {
-                    LazyColumn {
-                        itemsIndexed(shoppingList) { index, item ->
-                            var itemText by remember {
-                                mutableStateOf(
-                                    if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
-                                )
-                            }
+        Box(modifier = overlayModifier){
+            FoodTrackingTheme {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(15.dp),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Column {
+                        LazyColumn {
+                            itemsIndexed(shoppingList) { index, item ->
+                                var itemText by remember {
+                                    mutableStateOf(
+                                        if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
+                                    )
+                                }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = Color(0xFF1683FB),
-                                    ),
-                                    checked = item.Bought,
-                                    onCheckedChange = { isChecked ->
-                                        listViewModel.checkItem(item.id, isChecked)
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Checkbox(
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = Color(0xFF1683FB),
+                                        ),
+                                        checked = item.Bought,
+                                        onCheckedChange = { isChecked ->
+                                            listViewModel.checkItem(item.id, isChecked)
+                                            fabState.value = FabButtonState.Collapsed
+                                        }
+                                    )
+                                    CompositionLocalProvider(
+                                        LocalTextSelectionColors provides customTextSelectionColors,
+                                    ) {
+                                        OutlinedTextField(
+                                            colors = MyTextField(),
+                                            value = itemText,
+                                            onValueChange = { updatedText ->
+                                                itemText = updatedText
+                                            },
+                                            modifier = Modifier
+                                                .padding(start = 8.dp, end = 12.dp)
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .border(
+                                                    width = 1.dp,
+                                                    color = Color.Gray,
+                                                    shape = RoundedCornerShape(8.dp)
+                                                ),
+                                            textStyle = MaterialTheme.typography.bodyLarge,
+                                            singleLine = true,
+                                            keyboardActions = KeyboardActions(onDone = {
+                                                keyboardController?.hide()
+                                                val (productName, amount) = parseItemInput(itemText)
+                                                listViewModel.modifyItem(
+                                                    item.id,
+                                                    productName,
+                                                    amount,
+                                                    item.Bought
+                                                )
+                                            })
+                                        )
                                     }
-                                )
+                                }
+                            }
+                            item {
                                 CompositionLocalProvider(
                                     LocalTextSelectionColors provides customTextSelectionColors,
                                 ) {
                                     OutlinedTextField(
                                         colors = MyTextField(),
-                                        value = itemText,
-                                        onValueChange = { updatedText ->
-                                            itemText = updatedText
-                                        },
+                                        value = newText,
+                                        onValueChange = { newText = it },
                                         modifier = Modifier
-                                            .padding(start = 8.dp, end = 12.dp)
-                                            .weight(1f)
+                                            .fillMaxWidth()
+                                            .padding(
+                                                start = 8.dp,
+                                                end = 12.dp,
+                                                top = 8.dp,
+                                                bottom = 8.dp
+                                            )
                                             .clip(RoundedCornerShape(8.dp))
                                             .border(
                                                 width = 1.dp,
                                                 color = Color.Gray,
                                                 shape = RoundedCornerShape(8.dp)
                                             ),
-                                        textStyle = MaterialTheme.typography.bodyLarge,
+                                        placeholder = { Text("Add new item") },
                                         singleLine = true,
+                                        textStyle = MaterialTheme.typography.bodyLarge,
                                         keyboardActions = KeyboardActions(onDone = {
                                             keyboardController?.hide()
-                                            val (productName, amount) = parseItemInput(itemText)
-                                            listViewModel.modifyItem(
-                                                item.id,
-                                                productName,
-                                                amount,
-                                                item.Bought
-                                            )
+                                            if (newText.isNotBlank()) {
+                                                val (productName, amount) = parseItemInput(newText)
+                                                listViewModel.insertItem(
+                                                    ListItem(productName, amount, false)
+                                                )
+                                                newText = ""
+                                            }
                                         })
                                     )
                                 }
-                            }
-                        }
-                        item {
-                            CompositionLocalProvider(
-                                LocalTextSelectionColors provides customTextSelectionColors,
-                            ) {
-                                OutlinedTextField(
-                                    colors = MyTextField(),
-                                    value = newText,
-                                    onValueChange = { newText = it },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(
-                                            start = 8.dp,
-                                            end = 12.dp,
-                                            top = 8.dp,
-                                            bottom = 8.dp
-                                        )
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .border(
-                                            width = 1.dp,
-                                            color = Color.Gray,
-                                            shape = RoundedCornerShape(8.dp)
-                                        ),
-                                    placeholder = { Text("Add new item") },
-                                    singleLine = true,
-                                    textStyle = MaterialTheme.typography.bodyLarge,
-                                    keyboardActions = KeyboardActions(onDone = {
-                                        keyboardController?.hide()
-                                        if (newText.isNotBlank()) {
-                                            val (productName, amount) = parseItemInput(newText)
-                                            listViewModel.insertItem(
-                                                ListItem(productName, amount, false)
-                                            )
-                                            newText = ""
-                                        }
-                                    })
-                                )
                             }
                         }
                     }
