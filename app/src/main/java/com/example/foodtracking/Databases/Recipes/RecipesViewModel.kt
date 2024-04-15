@@ -7,25 +7,25 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class ListViewModel(
+class RecipesViewModel(
     application: Application,
-    listDB: RecipesDB?
+    recipesDB: RecipesDB?
 ): AndroidViewModel(application) {
-    private var listRepository: RecipesRepository = RecipesRepository(listDB!!.listDao())
+    private var recipesRepository: RecipesRepository = RecipesRepository(recipesDB!!.recipesDao())
 
-    fun getAllItems() = listRepository.getData()
-    fun getItem(id: Int) = listRepository.getItem(id)
+    fun getAllItems() = recipesRepository.getData()
+    fun getItem(id: Int) = recipesRepository.getItem(id)
 }
 
-class ListViewModelFactory(
+class RecipesViewModelFactory(
     private val application: Application
 ): ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ListViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(RecipesViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ListViewModel(
+            return RecipesViewModel(
                 application = application,
-                listDB = RecipesDB.getDatabase(application)
+                recipesDB = RecipesDB.getDatabase(application)
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

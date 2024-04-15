@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 @Database(entities = [RecipesItem::class], version = 1)
 abstract class RecipesDB : RoomDatabase() {
 
-    abstract fun listDao(): RecipesDao
+    abstract fun recipesDao(): RecipesDao
 
     companion object {
         @Volatile
@@ -20,7 +20,7 @@ abstract class RecipesDB : RoomDatabase() {
                 DB_INSTANCE = Room.databaseBuilder(
                     context.applicationContext,
                     RecipesDB::class.java,
-                    "list_database"
+                    "recipes_database"
                 ).allowMainThreadQueries().build()
             }
             return DB_INSTANCE
