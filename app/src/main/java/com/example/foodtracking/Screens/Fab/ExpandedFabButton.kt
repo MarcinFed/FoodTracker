@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -112,16 +114,20 @@ fun MiniFabItem(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            elevation =  7.dp,
+            backgroundColor = Color.White,
+        ) {
         // Text label for the sub-item displayed in a rounded-corner background
-        Text(
-            text = item.label,
-            style = typography.labelSmall,
-            color = Color.Black,
-            modifier = Modifier
-                .clip(RoundedCornerShape(size = 8.dp))
-                .background(Color(0xFFCECED3))
-                .padding(all = 8.dp)
-        )
+            Text(
+                text = item.label,
+                style = typography.labelSmall,
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(all = 8.dp)
+            )
+        }
 
         // FloatingActionButton representing the sub-item
         FloatingActionButton(

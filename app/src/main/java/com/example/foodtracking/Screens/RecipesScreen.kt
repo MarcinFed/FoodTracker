@@ -2,6 +2,8 @@ package com.example.foodtracking.Screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,10 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -84,49 +89,60 @@ fun CategoryList(categories: List<Category>) {
 
 @Composable
 fun CategoryListItem(category: Category) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 12.dp)
-            .height(100.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = rememberImagePainter(
-                data = category.imageRes,
-                builder = {
-                    crossfade(true)
-                }
-            ),
-            contentDescription = "${category.name} image",
-            modifier = Modifier
-                .padding(end = 16.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .height(100.dp)
-                .width(100.dp),
-            contentScale = ContentScale.FillHeight
+            .padding(vertical = 8.dp, horizontal = 12.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation =  CardDefaults.cardElevation(defaultElevation = 7.dp, pressedElevation = 7.dp),
+        onClick = { /* Insert the onClick action here */},
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
         )
-        Column(
+    ) {
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 12.dp, start = 10.dp)
-                .fillMaxHeight()
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 8.dp)
+                .height(100.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = category.name,
-                style = MaterialTheme.typography.titleMedium,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                color = Color.Black
+            Image(
+                painter = rememberImagePainter(
+                    data = category.imageRes,
+                    builder = {
+                        crossfade(true)
+                    }
+                ),
+                contentDescription = "${category.name} image",
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .height(100.dp)
+                    .width(100.dp),
+                contentScale = ContentScale.FillHeight
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = category.description,
-                style = MaterialTheme.typography.bodyMedium,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 3,
-                color = Color.Gray
-            )
+            Column(
+                modifier = Modifier
+                    .padding(end = 8.dp, start = 8.dp)
+                    .fillMaxHeight()
+            ) {
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = category.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 3,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }
