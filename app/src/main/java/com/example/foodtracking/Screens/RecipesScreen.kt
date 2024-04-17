@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,8 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.foodtracking.Databases.Categories.Category
 import com.example.foodtracking.Navigation.BottomNavigationBar
 import com.example.foodtracking.R
@@ -38,7 +41,6 @@ import com.example.foodtracking.ui.theme.FoodTrackingTheme
 @Composable
 fun RecipesScreen(
     NavController: NavController
-    //RecipesViewModel: RecipesViewModel
 ) {
     val categories = remember {
         listOf(
@@ -48,7 +50,12 @@ fun RecipesScreen(
             Category("Pasta", "Versatile noodles served with a range of sauces and toppings from meats to vegetables", R.drawable.pasta),
             Category("Dumplings", "Small dough parcels filled with meat or vegetables, steamed, boiled, or fried", R.drawable.dumplings),
             Category("Sweer", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
-            // Add more categories if needed
+            Category("Pizza", "Italian dish with dough base, cheese, and toppings", R.drawable.pizza),
+            Category("Sushi", "Vinegar-flavored rice with fish, vegetables, or egg", R.drawable.sushi),
+            Category("Burger", "Meat patty in a bun, often with lettuce, tomato, and sauces", R.drawable.burger),
+            Category("Pasta", "Versatile noodles served with a range of sauces and toppings from meats to vegetables", R.drawable.pasta),
+            Category("Dumplings", "Small dough parcels filled with meat or vegetables, steamed, boiled, or fried", R.drawable.dumplings),
+            Category("Sweer", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
         )
     }
     Scaffold {
@@ -80,11 +87,17 @@ fun CategoryListItem(category: Category) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 8.dp, horizontal = 12.dp)
+            .height(100.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = category.imageRes),
+            painter = rememberImagePainter(
+                data = category.imageRes,
+                builder = {
+                    crossfade(true)
+                }
+            ),
             contentDescription = "${category.name} image",
             modifier = Modifier
                 .padding(end = 16.dp)
@@ -97,6 +110,7 @@ fun CategoryListItem(category: Category) {
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 12.dp, start = 10.dp)
+                .fillMaxHeight()
         ) {
             Text(
                 text = category.name,
@@ -115,4 +129,12 @@ fun CategoryListItem(category: Category) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun CaegoryListItemPreview() {
+    CategoryListItem(
+        Category("Pizza", "Italian dish with dough base, cheese, and toppings", R.drawable.pizza)
+    )
 }
