@@ -14,7 +14,7 @@ import com.example.foodtracking.ui.theme.FoodTrackingTheme
 
 @Composable
 fun CalendarScreen(
-    NavController: NavController
+    navController: NavController
     //, CalendarViewModel: CalendarViewModel
 ){
     FoodTrackingTheme {
