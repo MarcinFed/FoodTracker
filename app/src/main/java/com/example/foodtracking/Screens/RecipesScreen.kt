@@ -68,7 +68,7 @@ fun RecipesScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(15.dp),
+                    .padding(end = 15.dp, start = 15.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
                 CategoryList(categories)

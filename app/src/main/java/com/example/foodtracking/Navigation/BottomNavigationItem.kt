@@ -59,7 +59,7 @@ fun BottomNavItem(
     item: BottomNavigationItem,
     isSelected: Boolean
 ) {
-    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 30.dp else 24.dp)
+    val animatedHeight by animateDpAsState(targetValue = if (isSelected) 30.dp else 20.dp)
     val animatedElevation by animateDpAsState(targetValue = if (isSelected) 10.dp else 0.dp)
     val animatedAlpha by animateFloatAsState(targetValue = if (isSelected) 1f else 0.5f)
 
