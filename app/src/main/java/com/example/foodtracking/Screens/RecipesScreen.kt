@@ -20,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.foodtracking.R
 import com.example.foodtracking.Screens.TabScreens.Categories
+import com.example.foodtracking.Screens.TabScreens.Dishes
 import kotlinx.coroutines.launch
 
 
@@ -33,6 +34,7 @@ fun RecipesScreen(
         val coroutineScope = rememberCoroutineScope()
         TabRow(selectedTabIndex = pagerState.currentPage,
             contentColor = Color.Gray,
+            modifier = Modifier.fillMaxWidth(0.66f),
             divider = {},
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
@@ -46,7 +48,8 @@ fun RecipesScreen(
                 selected = pagerState.currentPage == 0,
                 text = {
                        Text(text = "Categories",
-                           color = if (pagerState.currentPage == 0) colorResource(id = R.color.blue) else Color.Gray)
+                           color = if (pagerState.currentPage == 0) colorResource(id = R.color.blue) else Color.Gray,
+                           fontWeight = if(pagerState.currentPage ==0) androidx.compose.ui.text.font.FontWeight.W900 else androidx.compose.ui.text.font.FontWeight.Normal)
                 },
                 onClick = {
                     coroutineScope.launch {
@@ -58,7 +61,8 @@ fun RecipesScreen(
                 selected = pagerState.currentPage == 1,
                 text = {
                     Text(text = "Dishes",
-                        color = if (pagerState.currentPage == 1) colorResource(id = R.color.blue) else Color.Gray)
+                        color = if (pagerState.currentPage == 1) colorResource(id = R.color.blue) else Color.Gray,
+                        fontWeight = if(pagerState.currentPage == 1) androidx.compose.ui.text.font.FontWeight.W900 else androidx.compose.ui.text.font.FontWeight.Normal)
                 },
                 onClick = {
                     coroutineScope.launch {
@@ -72,8 +76,8 @@ fun RecipesScreen(
             userScrollEnabled = true
         ) { page ->
             when (page) {
-                0 -> Categories()
-                1 -> Text("Dishes", color = Color.Black)
+                0 -> Categories(pagerState = pagerState)
+                1 -> Dishes()
             }
         }
     }
