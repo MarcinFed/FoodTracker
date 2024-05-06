@@ -76,8 +76,8 @@ fun RecipesScreen(
             userScrollEnabled = true
         ) { page ->
             when (page) {
-                0 -> Categories(pagerState = pagerState)
-                1 -> Dishes()
+                0 -> Categories(pagerState = pagerState, coroutineScope = coroutineScope)
+                1 -> Dishes(pagerState = pagerState, coroutineScope = coroutineScope, navController = navController)
             }
         }
     }

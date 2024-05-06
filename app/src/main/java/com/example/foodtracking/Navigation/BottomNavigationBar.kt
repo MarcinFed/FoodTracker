@@ -24,6 +24,7 @@ import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Screens.CalendarScreen
 import com.example.foodtracking.Screens.RecipesScreen
 import com.example.foodtracking.Screens.ShoppingListScreen
+import com.example.foodtracking.Screens.TabScreens.DishDetailScreen
 
 
 @Composable

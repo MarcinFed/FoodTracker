@@ -3,9 +3,6 @@ package com.example.foodtracking.Screens.TabScreens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,21 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.example.foodtracking.Databases.Categories.Category
+import com.example.foodtracking.Databases.Food.Category
 import com.example.foodtracking.R
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Categories(pagerState: PagerState) {
+fun Categories(pagerState: PagerState, coroutineScope: CoroutineScope) {
 
     val categories = remember {
         listOf(
@@ -73,31 +68,35 @@ fun Categories(pagerState: PagerState) {
                     .padding(end = 15.dp, start = 15.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
-                CategoryList(categories)
+                CategoryList(categories, coroutineScope = coroutineScope, pagerState = pagerState)
             }
         }
     }
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CategoryList(categories: List<Category>) {
+fun CategoryList(categories: List<Category>, coroutineScope: CoroutineScope, pagerState: PagerState) {
     LazyColumn {
         items(categories) { category ->
-            CategoryListItem(category)
+            CategoryListItem(category = category, coroutineScope = coroutineScope, pagerState = pagerState)
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CategoryListItem(category: Category) {
+fun CategoryListItem(category: Category, coroutineScope: CoroutineScope, pagerState: PagerState) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 12.dp),
         shape = RoundedCornerShape(8.dp),
         elevation =  CardDefaults.cardElevation(defaultElevation = 7.dp, pressedElevation = 7.dp),
-        onClick = { /* Insert the onClick action here */},
+        onClick = { coroutineScope.launch {
+            pagerState.animateScrollToPage(1)
+        }},
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -147,12 +146,4 @@ fun CategoryListItem(category: Category) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun CaegoryListItemPreview() {
-    CategoryListItem(
-        Category("Pizza", "Italian dish with dough base, cheese, and toppings", R.drawable.pizza)
-    )
 }

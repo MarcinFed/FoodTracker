@@ -1,4 +1,4 @@
-package com.example.foodtracking.Databases.Categories
+package com.example.foodtracking.Databases.Food
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Immutable
@@ -9,4 +9,5 @@ data class Category(
     val description: String,
     @DrawableRes val imageRes: Int
 )
+
 
