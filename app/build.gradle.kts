@@ -89,4 +89,6 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
 }

@@ -1,6 +1,7 @@
 package com.example.foodtracking.Screens.TabScreens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -52,6 +53,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.clickable
 import androidx.navigation.NavController
 import com.example.foodtracking.Databases.Food.DishRepository
+import com.example.foodtracking.Navigation.Screen
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -93,15 +95,15 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 12.dp)
-            .clickable{
-                      onDishClicked(dish, navController)
-            },
+            .padding(vertical = 8.dp, horizontal = 12.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 7.dp),
-        onClick = { coroutineScope.launch {
-            pagerState.animateScrollToPage(1)
-        }},
+        onClick = {
+            coroutineScope.launch {
+                Log.println(Log.ERROR, "Dish", "Dish clicked")
+                navController.navigate(Screen.DishDetailScreen.route + "/${dish.id}")
+            }
+        },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -158,8 +160,8 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
                             animationSpec = TweenSpec(durationMillis = 600)
                         )
                         rotationAngle.snapTo(0f)
-                        Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
                     }
+                    Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
@@ -178,8 +180,4 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
             }
         }
     }
-}
-
-fun onDishClicked(dish: Dish, navController: NavController) {
-    navController.navigate("dishDetail/${dish.id}")
 }

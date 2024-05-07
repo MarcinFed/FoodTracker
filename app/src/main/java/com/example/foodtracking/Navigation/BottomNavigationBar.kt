@@ -1,5 +1,6 @@
 package com.example.foodtracking.Navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -95,7 +96,11 @@ fun BottomNavigationBar(
             composable(Screen.CalendarScreen.route) {
                 CalendarScreen(navController = navController)
             }
+            composable(route = Screen.DishDetailScreen.route + "/{id}"){
+                val dish = it.arguments?.getInt("id")
+                Log.println(Log.ERROR, "Dish id", dish.toString())
+                DishDetailScreen(dishId = dish, navController = navController)
+            }
         }
-
     }
 }

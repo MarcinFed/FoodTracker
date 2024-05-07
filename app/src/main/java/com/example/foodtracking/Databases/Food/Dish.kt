@@ -18,7 +18,7 @@ data class Dish(
     val description: String,
     val category: List<String>,
     @DrawableRes val imageRes: Int,
-    val youtubeUrl: String,
+    val youtubeVideoId: String,
     val recipeSections: Map<String, String>,
     val ingredients: List<Ingredient>
 )

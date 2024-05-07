@@ -5,19 +5,24 @@ import com.example.foodtracking.R
 object DishRepository {
     private val dishes = listOf(
         Dish(
-            id = 1,
-            name = "Pizza",
-            description = "Classic Italian pizza recipe with homemade dough.",
+            id = 0,
+            name = "Pizza Margherita",
+            description = "Classic Italian pizza recipe with homemade dough and fresh ingredients.",
             category = listOf("Italian", "Pizza"),
             imageRes = R.drawable.pizza,
-            youtubeUrl = "https://www.youtube.com/watch?v=1-SJGQ2HLp8&ab_channel=JamieOliver",
+            youtubeVideoId = "1-SJGQ2HLp8",
             recipeSections = mapOf(
-                "Preparation" to "Mix ingredients for dough.",
-                "Baking" to "Bake at 220°C for 20 minutes."
+                "Dough Preparation" to "1. Combine the flour, yeast, and salt in a large bowl.\n2. Add water and stir until a sticky dough forms.\n3. Knead the dough on a floured surface for about 5 minutes until smooth.\n4. Place the dough in a greased bowl, cover, and let rise for 2 hours.",
+                "Sauce Preparation" to "1. Blend the tomatoes until smooth.\n2. In a saucepan, heat the tomato puree over medium heat until it thickens.\n3. Season with salt and set aside.",
+                "Pizza Preparation" to "1. Preheat your oven to the highest temperature.\n2. Roll out the dough on a floured surface.\n3. Spread the sauce over the dough, leaving a border for the crust.\n4. Sprinkle mozzarella over the sauce.\n5. Bake for about 10-15 minutes until the crust is golden and the cheese is bubbly and slightly browned."
             ),
             ingredients = listOf(
                 Ingredient(name = "Flour", amount = 2f, unit = "cups"),
-                Ingredient(name = "Yeast", amount = 1f, unit = "tsp")
+                Ingredient(name = "Yeast", amount = 1f, unit = "tsp"),
+                Ingredient(name = "Salt", amount = 1f, unit = "tsp"),
+                Ingredient(name = "Water", amount = 1f, unit = "cup"),
+                Ingredient(name = "Tomato", amount = 2f, unit = "pcs"),
+                Ingredient(name = "Mozzarella", amount = 200f, unit = "g")
             )
         )
         // Add more dishes here
