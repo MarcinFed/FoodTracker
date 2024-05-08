@@ -51,14 +51,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.clickable
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
 import com.example.foodtracking.Databases.Food.DishRepository
+import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Navigation.Screen
+import com.example.foodtracking.Screens.PopUp.PopUp
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController: NavController) {
+fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController: NavController, listViewModel: ListViewModel) {
 
     val dishes = remember {DishRepository.getDishes()}
 
@@ -70,7 +73,7 @@ fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController
                     .padding(end = 15.dp, start = 15.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
-                RecipeList(dishes, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController)
+                RecipeList(dishes, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel)
             }
         }
     }
@@ -79,19 +82,24 @@ fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecipeList(dishes: List<Dish>, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController) {
+fun RecipeList(dishes: List<Dish>, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel) {
     LazyColumn {
         items(dishes) { dish ->
-            RecipeListItem(dish = dish, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController)
+            RecipeListItem(dish = dish, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController) {
+fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel) {
     val context = LocalContext.current
     var rotationAngle = remember { Animatable(0f) }
+    val showPopup = remember { mutableStateOf(false) } // State to control popup visibility
+
+    if (showPopup.value) {
+        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish) // Pass a dismiss handler to close the popup
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -161,7 +169,7 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
                         )
                         rotationAngle.snapTo(0f)
                     }
-                    Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
+                    showPopup.value = true
                 },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)

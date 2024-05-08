@@ -17,7 +17,7 @@ class ListRepository (
         return listDao?.delete(item)!! > 0
     }
 
-    fun modifyItem(id: Int, Product: String, Amount: Int, Bought: Boolean) {
+    fun modifyItem(id: Int, Product: String, Amount: Float, Bought: Boolean) {
         val modifiedItem = ListItem(Product, Amount, Bought)
         modifiedItem.id = id
         listDao?.update(modifiedItem)

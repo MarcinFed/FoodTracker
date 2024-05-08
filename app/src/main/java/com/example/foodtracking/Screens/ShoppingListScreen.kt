@@ -55,6 +55,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -179,7 +180,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     }
 }
 
-fun parseItemInput(input: String): Pair<String, Int> {
+fun parseItemInput(input: String): Pair<String, Float> {
     val regex = Regex("^(.+?)\\s*[xX](\\d+)$|^(.+?)\\s+(\\d+)$")
     val matchResult = regex.find(input)
 
@@ -187,9 +188,9 @@ fun parseItemInput(input: String): Pair<String, Int> {
         // Check which group is matched for the quantity
         val productName = matchResult.groups[1]?.value ?: matchResult.groups[3]?.value ?: ""
         val quantityString = matchResult.groups[2]?.value ?: matchResult.groups[4]?.value ?: "1"
-        productName.trim() to quantityString.toInt()
+        productName.trim() to quantityString.toFloat()
     } else {
-        input.trim() to 1 // Default quantity is 1 if not specified
+        input.trim() to 1f // Default quantity is 1 if not specified
     }
 }
 
@@ -210,7 +211,7 @@ fun ConfirmDeletionDialog(showDialog: Boolean, onDismiss: () -> Unit, confirmAct
                 ) {
                     Text(
                         stringResource(id = R.string.confirm),
-                        color = Color.Black
+                        color = colorResource(id = R.color.blue)
                     )
                 }
             },

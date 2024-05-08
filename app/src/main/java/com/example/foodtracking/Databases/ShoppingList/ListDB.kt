@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ListItem::class], version = 1)
+@Database(entities = [ListItem::class], version = 2)
 abstract class ListDB : RoomDatabase() {
 
     abstract fun listDao(): ListDao
@@ -21,7 +23,7 @@ abstract class ListDB : RoomDatabase() {
                     context.applicationContext,
                     ListDB::class.java,
                     "list_database"
-                ).allowMainThreadQueries().build()
+                ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
             }
             return DB_INSTANCE
         }

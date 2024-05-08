@@ -20,7 +20,7 @@ class ListViewModel(
     fun deleteItem(item: ListItem) = viewModelScope.launch {
         listRepository.deleteItem(item)
     }
-    fun modifyItem(id: Int, productName: String, amount: Int, bought: Boolean) = viewModelScope.launch {
+    fun modifyItem(id: Int, productName: String, amount: Float, bought: Boolean) = viewModelScope.launch {
         listRepository.modifyItem(id, productName, amount, bought)
     }
     fun checkItem(id: Int, bought: Boolean) = viewModelScope.launch{

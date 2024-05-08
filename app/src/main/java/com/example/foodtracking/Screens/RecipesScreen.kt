@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.R
 import com.example.foodtracking.Screens.TabScreens.Categories
 import com.example.foodtracking.Screens.TabScreens.Dishes
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecipesScreen(
     navController: NavController,
+    listViewModel: ListViewModel
 ) {
     Column() {
         val pagerState = rememberPagerState(pageCount = {2})
@@ -77,7 +79,7 @@ fun RecipesScreen(
         ) { page ->
             when (page) {
                 0 -> Categories(pagerState = pagerState, coroutineScope = coroutineScope)
-                1 -> Dishes(pagerState = pagerState, coroutineScope = coroutineScope, navController = navController)
+                1 -> Dishes(pagerState = pagerState, coroutineScope = coroutineScope, navController = navController, listViewModel = listViewModel)
             }
         }
     }

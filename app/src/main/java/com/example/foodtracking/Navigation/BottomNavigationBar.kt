@@ -88,7 +88,7 @@ fun BottomNavigationBar(
             startDestination = Screen.RecipesScreen.route,
             modifier = Modifier.padding(paddingValues = paddingValues)) {
             composable(Screen.RecipesScreen.route) {
-                RecipesScreen(navController = navController)
+                RecipesScreen(navController = navController, listViewModel = listViewModel)
             }
             composable(Screen.ShoppingListScreen.route) {
                 ShoppingListScreen(listViewModel)
@@ -99,7 +99,7 @@ fun BottomNavigationBar(
             composable(route = Screen.DishDetailScreen.route + "/{id}"){
                 val dish = it.arguments?.getInt("id")
                 Log.println(Log.ERROR, "Dish id", dish.toString())
-                DishDetailScreen(dishId = dish, navController = navController)
+                DishDetailScreen(dishId = dish, navController = navController, listViewModel = listViewModel)
             }
         }
     }
