@@ -3,7 +3,15 @@ package com.example.foodtracking.Screens.TabScreens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaPlayer
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -24,8 +32,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,11 +47,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -64,108 +78,140 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import kotlinx.coroutines.launch
 
-
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: ListViewModel) {
     val dish = DishRepository.getDish(dishId)
-    val showPopup = remember { mutableStateOf(false) } // State to control popup visibility
+    val showPopup = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
-    if (showPopup.value) {
-        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish) // Pass a dismiss handler to close the popup
+    val threshold = 240f
+    val transitionState = remember { MutableTransitionState(scrollState.value <= threshold) }
+    transitionState.targetState = scrollState.value <= threshold
+
+    val transition = updateTransition(transitionState, label = "ImageTransition")
+
+    val miniImageAlpha by transition.animateFloat(
+        label = "MiniImageAlpha",
+        transitionSpec = { spring(stiffness = Spring.StiffnessMedium) }
+    ) { state ->
+        if (state) 0f else 1f
     }
 
+    if (showPopup.value) {
+        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish)
+    }
+
+    val textOffset by animateFloatAsState(
+        targetValue = if (scrollState.value > 260) 100f else if (scrollState.value <260 && miniImageAlpha != 0f) 100f else 0f
+    )
+
     Scaffold(
-        modifier = Modifier
-            .padding(horizontal = 27.dp),
         topBar = {
             TopAppBar(
                 title = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(155.dp), // Ensure the height is enough to contain your contents.
-                        verticalArrangement = Arrangement.Bottom, // This will push the contents to the bottom
-                        horizontalAlignment = Alignment.Start // Align contents horizontally to the start
-                    ) {
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                    ){
+                        // Miniaturka pojawiająca się w TopAppBar
                         Image(
-                            painter = rememberImagePainter(dish.imageRes),
-                            contentDescription = "Dish Image",
+                            painter = rememberImagePainter(data = dish.imageRes),
+                            contentDescription = "Mini Dish Image",
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp)
-                                .clip(RoundedCornerShape(16.dp)),
-                            contentScale = ContentScale.FillWidth
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .alpha(miniImageAlpha),
+                            contentScale = ContentScale.Crop
                         )
-                        Text(dish.name, style = MaterialTheme.typography.headlineLarge, color = Color.Black, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+
+                        Text(
+                            text = dish.name,
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.graphicsLayer {
+                                translationX = textOffset
+                            }
+                        )
                     }
                 },
-                modifier = Modifier
-                    .offset(x = (-16).dp)
-                    .height(155.dp)
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    }
+                },
             )
         }
-    ) { padding ->
-            Column(
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxSize()
+                .padding(start = 27.dp, end = 27.dp, top = 70.dp)
+        ) {
+            Image(
+                painter = rememberImagePainter(dish.imageRes),
+                contentDescription = "Dish Image",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(dish.description, color = Color.Black)
-                Spacer(modifier = Modifier.size(16.dp))
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
 
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(dish.description, color = Color.Black, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.size(16.dp))
 
+            Text(
+                "Ingredients",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color.Black,
+                fontWeight = FontWeight(500)
+            )
+            dish.ingredients.forEach { ingredient ->
                 Text(
-                    "Ingredients",
+                    "${ingredient.name}: ${ingredient.amount} ${ingredient.unit}",
+                    color = Color.Black
+                )
+            }
+
+            dish.recipeSections.forEach { (section, steps) ->
+                Spacer(modifier = Modifier.size(16.dp))
+                Text(
+                    section,
                     style = MaterialTheme.typography.titleLarge,
                     color = Color.Black,
                     fontWeight = FontWeight(500)
                 )
-                dish.ingredients.forEach { ingredient ->
-                    Text(
-                        "${ingredient.name}: ${ingredient.amount} ${ingredient.unit}",
-                        color = Color.Black
-                    )
-                }
-
-                dish.recipeSections.forEach { (section, steps) ->
-
-                    Spacer(modifier = Modifier.size(16.dp))
-                    Text(
-                        section,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.Black,
-                        fontWeight = FontWeight(500)
-                    )
-                    Text(steps, color = Color.Black)
-
-                }
-                YoutubePlayer(dish.youtubeVideoId, LocalLifecycleOwner.current)
-
-                Button(
-                    onClick = {
-                        showPopup.value = true
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            color = colorResource(id = R.color.blue),
-                            width = 1.dp,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                ) {
-                    Text(
-                        "Add to shopping list",
-                        color = Color.Black,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-
-                Spacer(modifier = Modifier.size(16.dp))
+                Text(steps, color = Color.Black)
             }
+            YoutubePlayer(dish.youtubeVideoId, LocalLifecycleOwner.current)
+
+            Button(
+                onClick = {
+                    showPopup.value = true
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        color = colorResource(id = R.color.blue),
+                        width = 1.dp,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Text(
+                    "Add to shopping list",
+                    color = Color.Black,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.size(16.dp))
         }
     }
+}
 
 
 @Composable

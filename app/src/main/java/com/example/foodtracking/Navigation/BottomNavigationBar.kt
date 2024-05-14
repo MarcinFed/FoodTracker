@@ -16,7 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -40,46 +43,8 @@ fun BottomNavigationBar(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(70.dp)
-                    .padding(bottom = 10.dp, start = 20.dp, end = 20.dp),
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
-            ) {
-            // Drawing a line above the navigation bar
-                NavigationBar(
-                    modifier = Modifier
-                        .height(70.dp)
-                        .fillMaxWidth()
-    //                    .drawBehind {
-    //                        val strokeWidth = 1.dp.toPx() // Thickness of the line
-    //                        drawLine(
-    //                            Color.Gray, // Color of the line
-    //                            start = Offset(x = 0f, y = 0f), // Start point of the line (top left)
-    //                            end = Offset(x = size.width, y = 0f), // End point of the line (top right)
-    //                            strokeWidth = strokeWidth
-    //                        )
-    //                    }
-                ) {
-                    BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
-                        val isSelected = navigationItem.route == currentDestination?.route
-                        NavigationBarItem(
-                            icon = { BottomNavItem(navigationItem, isSelected) },
-                            label = { Text(text = navigationItem.title) },
-                            selected = isSelected,
-                            onClick = {
-                                navController.navigate(navigationItem.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
-                }
+            if (currentDestination?.route != Screen.DishDetailScreen.route +"/{id}") {
+                NavigationBarCard(navController, navBackStackEntry, currentDestination)
             }
         }
     ) { paddingValues ->
@@ -100,6 +65,42 @@ fun BottomNavigationBar(
                 val dish = it.arguments?.getInt("id")
                 Log.println(Log.ERROR, "Dish id", dish.toString())
                 DishDetailScreen(dishId = dish, navController = navController, listViewModel = listViewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun NavigationBarCard(navController: NavHostController, navBackStackEntry: NavBackStackEntry?, currentDestination: NavDestination?) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(bottom = 10.dp, start = 20.dp, end = 20.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp)
+    ) {
+        // Drawing a line above the navigation bar
+        NavigationBar(
+            modifier = Modifier
+                .height(70.dp)
+                .fillMaxWidth()
+        ) {
+            BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
+                val isSelected = navigationItem.route == currentDestination?.route
+                NavigationBarItem(
+                    icon = { BottomNavItem(navigationItem, isSelected) },
+                    label = { Text(text = navigationItem.title) },
+                    selected = isSelected,
+                    onClick = {
+                        navController.navigate(navigationItem.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             }
         }
     }
