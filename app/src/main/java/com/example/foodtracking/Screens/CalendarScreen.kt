@@ -2,6 +2,7 @@ package com.example.foodtracking.Screens
 
 import androidx.annotation.ColorRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,42 +37,51 @@ fun CalendarScreen(
     //, CalendarViewModel: CalendarViewModel
 ) {
     val datePickerState = rememberDatePickerState()
-    FoodTrackingTheme {
-        Surface(
+    Column() {
+        Card(
             modifier = Modifier
-                .height(400.dp)
-                .padding(15.dp),
-            color = MaterialTheme.colorScheme.background
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 27.dp)
+                .height(400.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 7.dp,
+                pressedElevation = 7.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 12.dp)
-                    .heightIn(max = 300.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 7.dp,
-                    pressedElevation = 7.dp
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false,
+                title = null,
+                headline = null,
+                colors = DatePickerDefaults.colors(
+                    containerColor = Color.White,
+                    todayContentColor = colorResource(id = R.color.blue),
+                    dayContentColor = Color.Black,
+                    todayDateBorderColor = colorResource(id = R.color.blue),
+                    selectedDayContentColor = Color.White,
+                    selectedDayContainerColor = colorResource(id = R.color.blue),
                 ),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
-            ) {
-                DatePicker(
-                    state = datePickerState,
-                    showModeToggle = false,
-                    title = null,
-                    headline = null,
-                    colors = DatePickerDefaults.colors(
-                        containerColor = Color.White,
-                        todayContentColor = colorResource(id = R.color.blue),
-                        dayContentColor = Color.Black,
-                        todayDateBorderColor = colorResource(id = R.color.blue),
-                        selectedDayContentColor = Color.White,
-                        selectedDayContainerColor = colorResource(id = R.color.blue),
-                    ),
-                )
-            }
+            )
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp, horizontal = 27.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 7.dp,
+                pressedElevation = 7.dp
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+
         }
     }
 }
+
