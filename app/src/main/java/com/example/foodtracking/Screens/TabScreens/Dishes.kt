@@ -1,6 +1,7 @@
 package com.example.foodtracking.Screens.TabScreens
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.core.TweenSpec
@@ -53,6 +54,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavController
+import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.Food.DishRepository
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Navigation.Screen
@@ -61,9 +63,12 @@ import com.example.foodtracking.Screens.PopUp.PopUp
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController: NavController, listViewModel: ListViewModel) {
-
-    val dishes = remember {DishRepository.getDishes()}
+fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController: NavController, listViewModel: ListViewModel, calendarViewModel: CalendarViewModel) {
+    val sharedPreferences = LocalContext.current.getSharedPreferences("FoodTracking", 0)
+    val category = sharedPreferences.getString("category", "All") ?: "All"
+    val dishes = remember {DishRepository.getDishes(category)}
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+    editor.putString("category", "All").apply()
 
     Scaffold {
         FoodTrackingTheme {
@@ -73,7 +78,7 @@ fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController
                     .padding(end = 15.dp, start = 15.dp),
                 color = MaterialTheme.colorScheme.background
             ) {
-                RecipeList(dishes, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel)
+                RecipeList(dishes, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
             }
         }
     }
@@ -82,23 +87,23 @@ fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecipeList(dishes: List<Dish>, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel) {
+fun RecipeList(dishes: List<Dish>, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel, calendarViewModel: CalendarViewModel) {
     LazyColumn {
         items(dishes) { dish ->
-            RecipeListItem(dish = dish, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel)
+            RecipeListItem(dish = dish, coroutineScope = coroutineScope, pagerState = pagerState, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel) {
+fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: PagerState, navController: NavController, listViewModel: ListViewModel, calendarViewModel: CalendarViewModel) {
     val context = LocalContext.current
     var rotationAngle = remember { Animatable(0f) }
     val showPopup = remember { mutableStateOf(false) } // State to control popup visibility
 
     if (showPopup.value) {
-        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish) // Pass a dismiss handler to close the popup
+        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish, calendarViewModel = calendarViewModel) // Pass a dismiss handler to close the popup
     }
     Card(
         modifier = Modifier
@@ -108,7 +113,7 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
         elevation = CardDefaults.cardElevation(defaultElevation = 7.dp),
         onClick = {
             coroutineScope.launch {
-                Log.println(Log.ERROR, "Dish", "Dish clicked")
+                Log.println(Log.ERROR, "Dish", dish.id.toString())
                 navController.navigate(Screen.DishDetailScreen.route + "/${dish.id}")
             }
         },

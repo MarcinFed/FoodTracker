@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.foodtracking.Databases.Calendar.CalendarViewModel
+import com.example.foodtracking.Databases.Calendar.CalendarViewModelFactory
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Databases.ShoppingList.ListViewModelFactory
 import com.example.foodtracking.Navigation.BottomNavigationBar
@@ -31,13 +33,16 @@ class MainActivity : ComponentActivity() {
                 val listViewModel: ListViewModel = viewModel(
                     factory = ListViewModelFactory(LocalContext.current.applicationContext as Application)
                 )
+                val calendarViewModel: CalendarViewModel = viewModel(
+                    factory = CalendarViewModelFactory(LocalContext.current.applicationContext as Application)
+                )
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
                         bottomBar = {
-                            BottomNavigationBar(listViewModel)
+                            BottomNavigationBar(listViewModel, calendarViewModel)
                         }
                     ){
 

@@ -68,6 +68,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.Food.Dish
 import com.example.foodtracking.Databases.Food.DishRepository
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
@@ -81,7 +82,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: ListViewModel) {
+fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: ListViewModel, calendarViewModel: CalendarViewModel) {
     val dish = DishRepository.getDish(dishId)
     val showPopup = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
@@ -100,7 +101,7 @@ fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: 
     }
 
     if (showPopup.value) {
-        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish)
+        PopUp(onDismiss = { showPopup.value = false }, listViewModel = listViewModel, dish = dish, calendarViewModel = calendarViewModel)
     }
 
     val textOffset by animateFloatAsState(

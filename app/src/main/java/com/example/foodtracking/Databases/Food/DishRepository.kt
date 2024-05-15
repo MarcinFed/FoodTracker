@@ -28,6 +28,12 @@ object DishRepository {
         // Add more dishes here
     )
 
-    fun getDishes(): List<Dish> = dishes
+    fun getDishes(category: String): List<Dish> {
+        if (category == "All") return dishes
+        return dishes.filter {
+            it.category.contains(category)
+        }
+    }
+
     fun getDish(id: Int?): Dish = dishes.first { it.id == id }
 }

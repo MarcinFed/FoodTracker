@@ -2,7 +2,9 @@ package com.example.foodtracking.Screens.PopUp
 
 import android.app.DatePickerDialog
 import android.media.MediaPlayer
+import android.util.Log
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.Food.Dish
 import com.example.foodtracking.Databases.Food.DishRepository
 import com.example.foodtracking.Databases.ShoppingList.ListItem
@@ -35,11 +38,12 @@ import com.example.foodtracking.R
 import java.util.Calendar
 
 @Composable
-fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish) {
+fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calendarViewModel: CalendarViewModel) {
     val context = LocalContext.current
     val (showDialog, setShowDialog) = remember { mutableStateOf(true) }
     val (date, setDate) = remember { mutableStateOf("") }
     val mMediaPlayer = MediaPlayer.create(context, R.raw.notification)
+    var clicks = 0
 
     if (showDialog) {
         AlertDialog(
@@ -57,8 +61,8 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish) {
                                1.dp,
                                Color.Gray,
                                RoundedCornerShape(12.dp)
-                           ) // Set rounded corners for the border
-                           .clip(RoundedCornerShape(12.dp))  // Apply clipping to round the corners of the Box
+                           )
+                           .clip(RoundedCornerShape(12.dp))
                            .width(200.dp)
                    ){
                        val calendar = Calendar.getInstance()
@@ -66,7 +70,16 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish) {
                            DatePickerDialog(
                                context,
                                { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                                   setDate("$dayOfMonth/${month + 1}/$year")
+                                   if (month < 10)
+                                       if (dayOfMonth < 10)
+                                           setDate("0$dayOfMonth/0${month + 1}/$year")
+                                       else
+                                           setDate("$dayOfMonth/0${month + 1}/$year")
+                                   else
+                                       if (dayOfMonth < 10)
+                                           setDate("0$dayOfMonth/${month + 1}/$year")
+                                       else
+                                           setDate("$dayOfMonth/${month + 1}/$year")
                                },
                                calendar.get(Calendar.YEAR),
                                calendar.get(Calendar.MONTH),
@@ -91,12 +104,43 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish) {
             confirmButton = {
                 Button(
                     onClick = {
-                        mMediaPlayer.start()
-                        for (ingredient in dish.ingredients) {
-                            listViewModel.insertItem(ListItem(ingredient.name, ingredient.amount, false))
+                        if (date.isEmpty()) {
+                            Toast.makeText(context, "Pick date first", Toast.LENGTH_SHORT).show()
                         }
-                        setShowDialog(false)
-                        onDismiss()
+                        else if (calendarViewModel.checkIfDishExists(date) && clicks != 1) {
+                            Toast.makeText(context, "There is a dish planned for this date already, to change it click 'Add' again", Toast.LENGTH_LONG).show()
+                            clicks += 1
+                        }
+                        else if (calendarViewModel.checkIfDishExists(date) && clicks == 1) {
+                            mMediaPlayer.start()
+                            for (ingredient in dish.ingredients) {
+                                listViewModel.insertItem(
+                                    ListItem(
+                                        ingredient.name,
+                                        ingredient.amount,
+                                        false
+                                    )
+                                )
+                            }
+                            calendarViewModel.modifyCalendarItem(date, dish.id)
+                            setShowDialog(false)
+                            onDismiss()
+                        }
+                        else {
+                            mMediaPlayer.start()
+                            for (ingredient in dish.ingredients) {
+                                listViewModel.insertItem(
+                                    ListItem(
+                                        ingredient.name,
+                                        ingredient.amount,
+                                        false
+                                    )
+                                )
+                            }
+                            calendarViewModel.addCalendarItem(date, dish.id)
+                            setShowDialog(false)
+                            onDismiss()
+                        }
                     }
                 ) {
                     Text("Add", color = colorResource(id = R.color.blue))

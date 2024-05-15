@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Screens.CalendarScreen
 import com.example.foodtracking.Screens.RecipesScreen
@@ -34,6 +35,7 @@ import com.example.foodtracking.Screens.TabScreens.DishDetailScreen
 @Composable
 fun BottomNavigationBar(
     listViewModel: ListViewModel,
+    calendarViewModel: CalendarViewModel
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -53,18 +55,18 @@ fun BottomNavigationBar(
             startDestination = Screen.RecipesScreen.route,
             modifier = Modifier.padding(paddingValues = paddingValues)) {
             composable(Screen.RecipesScreen.route) {
-                RecipesScreen(navController = navController, listViewModel = listViewModel)
+                RecipesScreen(navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
             }
             composable(Screen.ShoppingListScreen.route) {
                 ShoppingListScreen(listViewModel)
             }
             composable(Screen.CalendarScreen.route) {
-                CalendarScreen(navController = navController)
+                CalendarScreen(navController = navController, calendarViewModel = calendarViewModel)
             }
             composable(route = Screen.DishDetailScreen.route + "/{id}"){
                 val dish = it.arguments?.getInt("id")
                 Log.println(Log.ERROR, "Dish id", dish.toString())
-                DishDetailScreen(dishId = dish, navController = navController, listViewModel = listViewModel)
+                DishDetailScreen(dishId = dish, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
             }
         }
     }

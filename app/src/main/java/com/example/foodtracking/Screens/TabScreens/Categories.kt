@@ -1,6 +1,7 @@
 package com.example.foodtracking.Screens.TabScreens
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -88,6 +90,8 @@ fun CategoryList(categories: List<Category>, coroutineScope: CoroutineScope, pag
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryListItem(category: Category, coroutineScope: CoroutineScope, pagerState: PagerState) {
+    val sharedPreferences: SharedPreferences = LocalContext.current.getSharedPreferences("FoodTracking", 0)
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -95,6 +99,7 @@ fun CategoryListItem(category: Category, coroutineScope: CoroutineScope, pagerSt
         shape = RoundedCornerShape(8.dp),
         elevation =  CardDefaults.cardElevation(defaultElevation = 7.dp, pressedElevation = 7.dp),
         onClick = { coroutineScope.launch {
+            editor.putString("category", category.name).apply()
             pagerState.animateScrollToPage(1)
         }},
         colors = CardDefaults.cardColors(
