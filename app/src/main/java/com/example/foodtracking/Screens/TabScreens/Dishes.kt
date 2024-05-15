@@ -113,7 +113,6 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
         elevation = CardDefaults.cardElevation(defaultElevation = 7.dp),
         onClick = {
             coroutineScope.launch {
-                Log.println(Log.ERROR, "Dish", dish.id.toString())
                 navController.navigate(Screen.DishDetailScreen.route + "/${dish.id}")
             }
         },

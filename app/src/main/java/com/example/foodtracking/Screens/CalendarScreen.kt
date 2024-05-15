@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -46,6 +47,8 @@ import com.example.foodtracking.Navigation.Screen
 import com.example.foodtracking.R
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,11 +57,14 @@ fun CalendarScreen(
     navController: NavController,
     calendarViewModel: CalendarViewModel
 ) {
-    val datePickerState = rememberDatePickerState()
     val coroutineScope = rememberCoroutineScope()
 
+    // Ustawienie dzisiejszej daty jako domyślnej
+    val today = remember { SimpleDateFormat("dd/MM/yyyy").format(Date()) }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = Date().time)
+
     val selectedDate = datePickerState.selectedDateMillis?.let {
-        java.text.SimpleDateFormat("dd/MM/yyyy").format(it)
+        SimpleDateFormat("dd/MM/yyyy").format(it)
     }
     var mealId by remember { mutableStateOf(-1) }
 
@@ -71,7 +77,7 @@ fun CalendarScreen(
         }
     }
 
-    Column() {
+    Column {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -115,8 +121,9 @@ fun CalendarScreen(
             ),
             onClick = {
                 coroutineScope.launch {
-                    Log.println(Log.ERROR, "Dish", mealId.toString())
-                    navController.navigate(Screen.DishDetailScreen.route + "/${mealId}")
+                    if (mealId != -1) {
+                        navController.navigate(Screen.DishDetailScreen.route + "/$mealId")
+                    }
                 }
             }
         ) {
@@ -128,16 +135,15 @@ fun CalendarScreen(
                         color = Color.Black
                     )
                 } else {
-                    Column() {
+                    Column {
                         Text(
                             text = "Dish for this date",
                             style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = androidx.compose.ui.text.font.FontWeight(500),
+                            fontWeight = FontWeight(500),
                             color = Color.Black
                         )
                         DishRepository.getDish(mealId)?.let { dish ->
-                            Column()
-                            {
+                            Column {
                                 Spacer(modifier = Modifier.size(16.dp))
                                 Image(
                                     painter = rememberImagePainter(dish.imageRes),
@@ -153,7 +159,7 @@ fun CalendarScreen(
                                     dish.name,
                                     color = Color.Black,
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight(500)
+                                    fontWeight = FontWeight(500)
                                 )
                                 Spacer(modifier = Modifier.size(16.dp))
                                 Text(
