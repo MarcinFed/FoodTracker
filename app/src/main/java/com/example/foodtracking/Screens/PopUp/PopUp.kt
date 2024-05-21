@@ -49,6 +49,11 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
 
     fun handleConfirm() {
         mMediaPlayer.start()
+        val oldDishId = calendarViewModel.getCalendarItem(date)!!.mealId
+        val oldDish = DishRepository.getDish(oldDishId)
+        for (ingredient in oldDish.ingredients) {
+            listViewModel.substractItem(ingredient.name, ingredient.amount, false)
+        }
         for (ingredient in dish.ingredients) {
             listViewModel.insertItem(ListItem(ingredient.name, ingredient.amount, false))
         }
@@ -58,9 +63,9 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
     if (showPopup.value) {
         ConfirmDishChangeDialog(
             onDismiss = { showPopup.value = false},
-            onConfirm = { handleConfirm() },  // Use the confirmation handler
+            onConfirm = { handleConfirm() },
             date = date,
-            oldDishName = oldDish.value,  // Placeholder, replace with actual data
+            oldDishName = oldDish.value,
             newDishName = dish.name
         )
     }
@@ -97,7 +102,7 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
                                calendar.get(Calendar.MONTH),
                                calendar.get(Calendar.DAY_OF_MONTH)
                            )
-                           datePickerDialog.datePicker.minDate = calendar.timeInMillis // Ustawienie minimalnej daty na dzisiaj
+                           datePickerDialog.datePicker.minDate = calendar.timeInMillis
                            datePickerDialog.show()
                        }) {
                            Row(

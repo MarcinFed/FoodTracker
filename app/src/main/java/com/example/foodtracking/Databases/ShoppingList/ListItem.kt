@@ -6,17 +6,18 @@ import java.io.Serializable
 
 @Entity(tableName = "list_table")
 class ListItem : Serializable {
-    @PrimaryKey(autoGenerate = true)
-    var id = 0
+    @PrimaryKey(autoGenerate = false)
     var Product : String = ""
     var Amount : Float = 0f
+    var Metrics : String = ""
     var Bought : Boolean = false
 
 
     constructor()
-    constructor(Product: String, Amount: Float, Bought: Boolean) {
+    constructor(Product: String, Amount: Float, Metrics: String, Bought: Boolean) {
         this.Product = Product
         this.Amount = Amount
+        this.Metrics = Metrics
         this.Bought = Bought
     }
 

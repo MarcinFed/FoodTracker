@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ListDao {
-    @Query("SELECT * FROM list_table ORDER BY id ASC")
+    @Query("SELECT * FROM list_table ORDER BY Product ASC")
     fun getAllData(): Flow<List<ListItem>>
 
     @Query("DELETE FROM list_table")
@@ -25,8 +25,8 @@ interface ListDao {
     @Update
     fun update(item: ListItem): Int
 
-    @Query("SELECT * FROM list_table WHERE id = :id")
-    fun getItem(id: Int): ListItem
+    @Query("SELECT * FROM list_table WHERE Product = :Product")
+    fun getItem(Product: String): ListItem
 
     @Query("UPDATE list_table SET bought = :bought")
     fun checkAllItems(bought: Boolean)

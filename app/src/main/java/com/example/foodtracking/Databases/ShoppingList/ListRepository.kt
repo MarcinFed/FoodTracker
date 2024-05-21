@@ -17,15 +17,31 @@ class ListRepository (
         return listDao?.delete(item)!! > 0
     }
 
-    fun modifyItem(id: Int, Product: String, Amount: Float, Bought: Boolean) {
-        val modifiedItem = ListItem(Product, Amount, Bought)
-        modifiedItem.id = id
+    fun substractItem(productName: String, amount: Float, metrics: String, bought: Boolean) {
+        val substractedItem = ListItem(productName, listDao.getItem(productName).Amount - amount, metrics, bought)
+        if (substractedItem.Amount <= 0)
+            listDao?.delete(substractedItem)
+        else
+            listDao?.update(substractedItem)
+    }
+
+    fun addItem(productName: String, amount: Float, metrics: String, bought: Boolean) {
+        val item = ListItem(productName, amount, metrics, bought)
+        if (listDao.getItem(productName) == null)
+            listDao.insert(item)
+        else
+            substractItem(productName, -amount, metrics, bought)
+    }
+
+
+    fun modifyItem(product: String, amount: Float, metrics: String, bought: Boolean) {
+        val modifiedItem = ListItem(product, amount, metrics, bought)
         listDao?.update(modifiedItem)
     }
 
-    fun checkItem(id: Int, Bought: Boolean) {
-        val item = listDao?.getItem(id)
-        item?.Bought = Bought
+    fun checkItem(product: String, bought: Boolean) {
+        val item = listDao?.getItem(product)
+        item?.Bought = bought
         listDao?.update(item!!)
     }
 
