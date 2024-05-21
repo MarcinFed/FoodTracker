@@ -319,7 +319,7 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
                         shape = RoundedCornerShape(8.dp)
                     ),
                 textStyle = MaterialTheme.typography.bodyLarge,
-                singleLine = true,
+                singleLine = false,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                     val (productName, amount) = parseItemInput(itemText)

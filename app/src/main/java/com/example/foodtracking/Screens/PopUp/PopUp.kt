@@ -1,5 +1,6 @@
 package com.example.foodtracking.Screens.PopUp
 
+import ConfirmDishChangeDialog
 import android.app.DatePickerDialog
 import android.media.MediaPlayer
 import android.util.Log
@@ -25,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -43,7 +43,27 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
     val (showDialog, setShowDialog) = remember { mutableStateOf(true) }
     val (date, setDate) = remember { mutableStateOf("") }
     val mMediaPlayer = MediaPlayer.create(context, R.raw.notification)
-    var clicks = 0
+
+    val showPopup = remember { mutableStateOf(false) }
+    var oldDish = remember { mutableStateOf(" ")}
+
+    fun handleConfirm() {
+        mMediaPlayer.start()
+        for (ingredient in dish.ingredients) {
+            listViewModel.insertItem(ListItem(ingredient.name, ingredient.amount, false))
+        }
+        calendarViewModel.addCalendarItem(date, dish.id)
+    }
+
+    if (showPopup.value) {
+        ConfirmDishChangeDialog(
+            onDismiss = { showPopup.value = false},
+            onConfirm = { handleConfirm() },  // Use the confirmation handler
+            date = date,
+            oldDishName = oldDish.value,  // Placeholder, replace with actual data
+            newDishName = dish.name
+        )
+    }
 
     if (showDialog) {
         AlertDialog(
@@ -67,24 +87,18 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
                    ){
                        val calendar = Calendar.getInstance()
                        Button(onClick = {
-                           DatePickerDialog(
+                           val datePickerDialog = DatePickerDialog(
                                context,
                                { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                                   if (month < 10)
-                                       if (dayOfMonth < 10)
-                                           setDate("0$dayOfMonth/0${month + 1}/$year")
-                                       else
-                                           setDate("$dayOfMonth/0${month + 1}/$year")
-                                   else
-                                       if (dayOfMonth < 10)
-                                           setDate("0$dayOfMonth/${month + 1}/$year")
-                                       else
-                                           setDate("$dayOfMonth/${month + 1}/$year")
+                                   val formattedDate = String.format("%02d/%02d/%d", dayOfMonth, month + 1, year)
+                                   setDate(formattedDate)
                                },
                                calendar.get(Calendar.YEAR),
                                calendar.get(Calendar.MONTH),
-                               calendar.get(Calendar.DAY_OF_MONTH),
-                           ).show()
+                               calendar.get(Calendar.DAY_OF_MONTH)
+                           )
+                           datePickerDialog.datePicker.minDate = calendar.timeInMillis // Ustawienie minimalnej daty na dzisiaj
+                           datePickerDialog.show()
                        }) {
                            Row(
                                verticalAlignment = Alignment.CenterVertically,
@@ -107,24 +121,9 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
                         if (date.isEmpty()) {
                             Toast.makeText(context, "Pick date first", Toast.LENGTH_SHORT).show()
                         }
-                        else if (calendarViewModel.checkIfDishExists(date) && clicks != 1) {
-                            Toast.makeText(context, "There is a dish planned for this date already, to change it click 'Add' again", Toast.LENGTH_LONG).show()
-                            clicks += 1
-                        }
-                        else if (calendarViewModel.checkIfDishExists(date) && clicks == 1) {
-                            mMediaPlayer.start()
-                            for (ingredient in dish.ingredients) {
-                                listViewModel.insertItem(
-                                    ListItem(
-                                        ingredient.name,
-                                        ingredient.amount,
-                                        false
-                                    )
-                                )
-                            }
-                            calendarViewModel.modifyCalendarItem(date, dish.id)
-                            setShowDialog(false)
-                            onDismiss()
+                        else if (calendarViewModel.checkIfDishExists(date)) {
+                            oldDish.value = DishRepository.getDish(calendarViewModel.getCalendarItem(date)!!.mealId).name
+                            showPopup.value = true
                         }
                         else {
                             mMediaPlayer.start()
