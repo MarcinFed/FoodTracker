@@ -2,6 +2,7 @@ package com.example.foodtracking
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         setContent {
             FoodTrackingTheme {
                 val listViewModel: ListViewModel = viewModel(

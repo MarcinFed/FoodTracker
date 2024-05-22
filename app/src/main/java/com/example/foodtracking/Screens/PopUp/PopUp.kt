@@ -48,14 +48,15 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
     var oldDish = remember { mutableStateOf(" ")}
 
     fun handleConfirm() {
+        onDismiss()
         mMediaPlayer.start()
         val oldDishId = calendarViewModel.getCalendarItem(date)!!.mealId
         val oldDish = DishRepository.getDish(oldDishId)
         for (ingredient in oldDish.ingredients) {
-            listViewModel.substractItem(ingredient.name, ingredient.amount, false)
+            listViewModel.substractItem(ingredient.name, ingredient.amount, ingredient.unit, false)
         }
         for (ingredient in dish.ingredients) {
-            listViewModel.insertItem(ListItem(ingredient.name, ingredient.amount, false))
+            listViewModel.addItem(ingredient.name, ingredient.amount, ingredient.unit, false)
         }
         calendarViewModel.addCalendarItem(date, dish.id)
     }
@@ -133,12 +134,11 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
                         else {
                             mMediaPlayer.start()
                             for (ingredient in dish.ingredients) {
-                                listViewModel.insertItem(
-                                    ListItem(
+                                listViewModel.addItem(
                                         ingredient.name,
                                         ingredient.amount,
+                                        ingredient.unit,
                                         false
-                                    )
                                 )
                             }
                             calendarViewModel.addCalendarItem(date, dish.id)

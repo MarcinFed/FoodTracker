@@ -9,15 +9,15 @@ class ListItem : Serializable {
     @PrimaryKey(autoGenerate = false)
     var Product : String = ""
     var Amount : Float = 0f
-    var Metrics : String = ""
+    var Unit : String = ""
     var Bought : Boolean = false
 
 
     constructor()
-    constructor(Product: String, Amount: Float, Metrics: String, Bought: Boolean) {
+    constructor(Product: String, Amount: Float, Unit: String, Bought: Boolean) {
         this.Product = Product
         this.Amount = Amount
-        this.Metrics = Metrics
+        this.Unit = Unit
         this.Bought = Bought
     }
 

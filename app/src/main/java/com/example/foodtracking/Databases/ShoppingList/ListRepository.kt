@@ -5,44 +5,44 @@ import kotlinx.coroutines.flow.Flow
 class ListRepository (
     private val listDao: ListDao
 ) {
-    fun getData(): Flow<List<ListItem>>? {
-        return listDao?.getAllData()
+    fun getData(): Flow<List<ListItem>> {
+        return listDao.getAllData()
     }
 
     fun addItem(item: ListItem) : Boolean {
-        return listDao?.insert(item)!! >= 0
+        return listDao.insert(item) >= 0
     }
 
     fun deleteItem(item: ListItem) : Boolean {
-        return listDao?.delete(item)!! > 0
+        return listDao.delete(item) > 0
     }
 
-    fun substractItem(productName: String, amount: Float, metrics: String, bought: Boolean) {
-        val substractedItem = ListItem(productName, listDao.getItem(productName).Amount - amount, metrics, bought)
+    fun substractItem(productName: String, amount: Float, unit: String, bought: Boolean) {
+        val substractedItem = ListItem(productName, listDao.getItem(productName).Amount - amount, unit, bought)
         if (substractedItem.Amount <= 0)
-            listDao?.delete(substractedItem)
+            listDao.delete(substractedItem)
         else
-            listDao?.update(substractedItem)
+            listDao.update(substractedItem)
     }
 
-    fun addItem(productName: String, amount: Float, metrics: String, bought: Boolean) {
-        val item = ListItem(productName, amount, metrics, bought)
+    fun addItem(productName: String, amount: Float, unit: String, bought: Boolean) {
+        val item = ListItem(productName, amount, unit, bought)
         if (listDao.getItem(productName) == null)
             listDao.insert(item)
         else
-            substractItem(productName, -amount, metrics, bought)
+            substractItem(productName, -amount, unit, bought)
     }
 
 
-    fun modifyItem(product: String, amount: Float, metrics: String, bought: Boolean) {
-        val modifiedItem = ListItem(product, amount, metrics, bought)
-        listDao?.update(modifiedItem)
+    fun modifyItem(product: String, amount: Float, unit: String, bought: Boolean) {
+        val modifiedItem = ListItem(product, amount, unit, bought)
+        listDao.update(modifiedItem)
     }
 
     fun checkItem(product: String, bought: Boolean) {
-        val item = listDao?.getItem(product)
-        item?.Bought = bought
-        listDao?.update(item!!)
+        val item = listDao.getItem(product)
+        item.Bought = bought
+        listDao.update(item)
     }
 
     fun checkAllItems(bought: Boolean){
@@ -54,8 +54,6 @@ class ListRepository (
     }
 
     fun itemsChecked() : Boolean{
-        if (listDao.itemsChecked() > 0)
-            return true
-        return false
+        return listDao.itemsChecked() > 0
     }
 }

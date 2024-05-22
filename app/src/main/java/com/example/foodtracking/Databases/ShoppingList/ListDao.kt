@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ListDao {
-    @Query("SELECT * FROM list_table ORDER BY Product ASC")
+    @Query("SELECT * FROM list_table")
     fun getAllData(): Flow<List<ListItem>>
 
     @Query("DELETE FROM list_table")

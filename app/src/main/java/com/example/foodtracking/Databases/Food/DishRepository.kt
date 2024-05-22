@@ -17,11 +17,11 @@ object DishRepository {
                 "Pizza Preparation" to "1. Preheat your oven to the highest temperature.\n2. Roll out the dough on a floured surface.\n3. Spread the sauce over the dough, leaving a border for the crust.\n4. Sprinkle mozzarella over the sauce.\n5. Bake for about 10-15 minutes until the crust is golden and the cheese is bubbly and slightly browned."
             ),
             ingredients = listOf(
-                Ingredient(name = "Flour", amount = 2f, unit = "cups"),
-                Ingredient(name = "Yeast", amount = 1f, unit = "tsp"),
-                Ingredient(name = "Salt", amount = 1f, unit = "tsp"),
-                Ingredient(name = "Water", amount = 1f, unit = "cup"),
-                Ingredient(name = "Tomato", amount = 2f, unit = "pcs"),
+                Ingredient(name = "Flour", amount = 2f, unit = "kg"),
+                Ingredient(name = "Yeast", amount = 1f, unit = "g"),
+                Ingredient(name = "Salt", amount = 1f, unit = "g"),
+                Ingredient(name = "Water", amount = 250f, unit = "ml"),
+                Ingredient(name = "Tomato", amount = 2f, unit = ""),
                 Ingredient(name = "Mozzarella", amount = 200f, unit = "g")
             )
         )

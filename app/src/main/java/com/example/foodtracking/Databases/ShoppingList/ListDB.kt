@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [ListItem::class], version = 2)
+@Database(entities = [ListItem::class], version = 5)
 abstract class ListDB : RoomDatabase() {
 
     abstract fun listDao(): ListDao

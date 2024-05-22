@@ -2,6 +2,7 @@ package com.example.foodtracking.Screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -59,6 +60,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.foodtracking.Databases.ShoppingList.ListItem
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
@@ -76,7 +78,7 @@ import com.example.foodtracking.ui.theme.MyTextField
 @SuppressLint("SuspiciousIndentation", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ShoppingListScreen(listViewModel: ListViewModel) {
-    val shoppingList by listViewModel.getAllItems()!!.collectAsState(initial = emptyList())
+    val shoppingList by listViewModel.allItems.collectAsState(emptyList())
     var newText by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
@@ -158,13 +160,14 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                             ),
                                         placeholder = { Text("Add new item") },
                                         singleLine = true,
+                                        maxLines = 1,
                                         textStyle = MaterialTheme.typography.bodyLarge,
                                         keyboardActions = KeyboardActions(onDone = {
                                             keyboardController?.hide()
                                             if (newText.isNotBlank()) {
-                                                val (productName, amount) = parseItemInput(newText)
-                                                listViewModel.insertItem(
-                                                    ListItem(productName, amount, false)
+                                                val (productName, amount, unit) = parseItemInput(newText)
+                                                listViewModel.addItem(
+                                                    productName, amount, unit, false
                                                 )
                                                 newText = ""
                                             }
@@ -180,18 +183,22 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     }
 }
 
-fun parseItemInput(input: String): Pair<String, Float> {
-    val regex = Regex("^(.+?)\\s*[xX](\\d+)$|^(.+?)\\s+(\\d+)$")
-    val matchResult = regex.find(input)
+fun parseItemInput(input: String): Triple<String, Float, String> {
+    // Zaktualizowane wyrażenie regularne, które ignoruje 'x' lub 'X' jako separator przed liczbą oraz obsługuje liczby dziesiętne
+    val regex = Regex("^(.+?)\\s*(?:[xX]\\s*)?(\\d+(?:\\.\\d+)?)\\s*([a-zA-Z]*|g|kg|ml|l)$")
 
-    return if (matchResult != null) {
-        // Check which group is matched for the quantity
-        val productName = matchResult.groups[1]?.value ?: matchResult.groups[3]?.value ?: ""
-        val quantityString = matchResult.groups[2]?.value ?: matchResult.groups[4]?.value ?: "1"
-        productName.trim() to quantityString.toFloat()
-    } else {
-        input.trim() to 1f // Default quantity is 1 if not specified
+    val matchResult = regex.find(input)
+    if (matchResult != null) {
+        val productName = matchResult.groupValues[1].trim()
+        val quantityString = matchResult.groupValues[2]
+        val unit = matchResult.groupValues[3].trim()
+
+        val quantity = quantityString.toFloatOrNull() ?: 1f // Ustawienie wartości domyślnej, jeśli konwersja na float zawiedzie
+        return Triple(productName, quantity, unit)
     }
+
+    // Zwracanie wejściowej wartości jako nazwa produktu z domyślną ilością i jednostką, gdy dopasowanie zawiedzie
+    return Triple(input.trim(), 1f, "")
 }
 
 @Composable
@@ -277,12 +284,18 @@ fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableSta
 }
 
 @Composable
-fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSelectionColors: TextSelectionColors, fabState: MutableState<FabButtonState>, keyboardController: SoftwareKeyboardController?){
+fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSelectionColors: TextSelectionColors, fabState: MutableState<FabButtonState>, keyboardController: SoftwareKeyboardController?) {
     var itemText by remember {
         mutableStateOf(
-            if (item.Amount > 1) "${item.Product} X${item.Amount}" else item.Product
+            if (item.Unit.isNotEmpty()) {
+                "${item.Product} ${item.Amount}${item.Unit}"
+            } else {
+                Log.println(Log.INFO, "ShoppingListItem", "Product: ${item.Product}, Amount: ${item.Amount}, Unit: ${item.Unit}")
+                if (item.Amount > 1) "${item.Product} x${item.Amount}" else item.Product
+            }
         )
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -296,10 +309,11 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
             ),
             checked = item.Bought,
             onCheckedChange = { isChecked ->
-                listViewModel.checkItem(item.id, isChecked)
+                listViewModel.checkItem(item.Product, isChecked)
                 fabState.value = FabButtonState.Collapsed
             }
         )
+
         CompositionLocalProvider(
             LocalTextSelectionColors provides customTextSelectionColors,
         ) {
@@ -319,14 +333,16 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
                         shape = RoundedCornerShape(8.dp)
                     ),
                 textStyle = MaterialTheme.typography.bodyLarge,
-                singleLine = false,
+                singleLine = true,
+                maxLines = 1,
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                    val (productName, amount) = parseItemInput(itemText)
+                    val (productName, amount, unit) = parseItemInput(itemText)
+                    Log.println(Log.INFO, "ShoppingListItem", "Product: $productName, Amount: $amount, Unit: $unit")
                     listViewModel.modifyItem(
-                        item.id,
                         productName,
                         amount,
+                        unit,
                         item.Bought
                     )
                 })
