@@ -18,11 +18,16 @@ class ListRepository (
     }
 
     fun substractItem(productName: String, amount: Float, unit: String, bought: Boolean) {
-        val substractedItem = ListItem(productName, listDao.getItem(productName).Amount - amount, unit, bought)
-        if (substractedItem.Amount <= 0)
-            listDao.delete(substractedItem)
-        else
-            listDao.update(substractedItem)
+        if(listDao.getItem(productName) == null)
+            return
+        else {
+            val substractedItem = ListItem(productName, listDao.getItem(productName).Amount - amount, unit, bought)
+            if (substractedItem.Amount <= 0)
+                listDao.delete(substractedItem)
+            else
+                listDao.update(substractedItem)
+        }
+
     }
 
     fun addItem(productName: String, amount: Float, unit: String, bought: Boolean) {

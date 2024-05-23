@@ -63,10 +63,10 @@ fun BottomNavigationBar(
             composable(Screen.CalendarScreen.route) {
                 CalendarScreen(navController = navController, calendarViewModel = calendarViewModel)
             }
-            composable(route = Screen.DishDetailScreen.route + "/{id}"){
-                val dish = it.arguments?.getInt("id")
-                Log.println(Log.ERROR, "Dish id", dish.toString())
-                DishDetailScreen(dishId = dish, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
+            composable(route = Screen.DishDetailScreen.route + "/{id}") { backStackEntry ->
+                val dishId = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+                Log.d("DishDetailScreen", "Dish id: $dishId")
+                DishDetailScreen(dishId = dishId, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
             }
         }
     }

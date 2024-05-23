@@ -1,5 +1,7 @@
 package com.example.foodtracking.Screens
 
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +13,14 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.foodtracking.Databases.Calendar.CalendarViewModel
@@ -33,9 +38,19 @@ fun RecipesScreen(
     listViewModel: ListViewModel,
     calendarViewModel: CalendarViewModel
 ) {
+    val pagerState = rememberPagerState(pageCount = {2})
+    val coroutineScope = rememberCoroutineScope()
+    val sharedPreferences = LocalContext.current.getSharedPreferences("FoodTracking", 0)
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
+    LaunchedEffect(pagerState.currentPage) {
+        if (pagerState.currentPage == 0) {
+            editor.putString("category", "All").apply()
+            Log.d("RecipesScreen", "Category set to All")
+        }
+    }
+
     Column() {
-        val pagerState = rememberPagerState(pageCount = {2})
-        val coroutineScope = rememberCoroutineScope()
         TabRow(selectedTabIndex = pagerState.currentPage,
             contentColor = Color.Gray,
             modifier = Modifier.fillMaxWidth(0.66f),

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.annotation.ColorRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,12 +33,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -49,6 +53,7 @@ import com.example.foodtracking.ui.theme.FoodTrackingTheme
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +72,9 @@ fun CalendarScreen(
         SimpleDateFormat("dd/MM/yyyy").format(it)
     }
     var mealId by remember { mutableStateOf(-1) }
+    val selectedDateDisplay = datePickerState.selectedDateMillis?.let {
+        SimpleDateFormat("MMM dd", Locale.ENGLISH).format(it)
+    }
 
     LaunchedEffect(selectedDate) {
         selectedDate?.let { date ->
@@ -110,7 +118,8 @@ fun CalendarScreen(
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 8.dp, horizontal = 27.dp),
+                .padding(vertical = 8.dp, horizontal = 27.dp)
+                .align(Alignment.CenterHorizontally),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 7.dp,
@@ -127,18 +136,23 @@ fun CalendarScreen(
                 }
             }
         ) {
-            Box(modifier = Modifier.padding(16.dp)) {
+            Box(
+                modifier = Modifier.padding(16.dp)
+            ) {
                 if (mealId == -1) {
                     Text(
-                        text = "No dish for this date",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = "You haven't yet selected a dish for ${selectedDateDisplay ?: "selected day"}",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight(500),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
                         color = Color.Black
                     )
                 } else {
                     Column {
                         Text(
-                            text = "Dish for this date",
-                            style = MaterialTheme.typography.headlineSmall,
+                            text = "Dish for ${selectedDateDisplay ?: "selected day"}",
+                            style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight(500),
                             color = Color.Black
                         )
@@ -150,7 +164,7 @@ fun CalendarScreen(
                                     contentDescription = "Dish Image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(100.dp)
+                                        .height(150.dp)
                                         .clip(RoundedCornerShape(16.dp)),
                                     contentScale = ContentScale.Crop
                                 )
@@ -158,7 +172,7 @@ fun CalendarScreen(
                                 Text(
                                     dish.name,
                                     color = Color.Black,
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.headlineSmall,
                                     fontWeight = FontWeight(500)
                                 )
                                 Spacer(modifier = Modifier.size(16.dp))

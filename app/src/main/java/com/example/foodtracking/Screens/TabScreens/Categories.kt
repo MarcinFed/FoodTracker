@@ -2,6 +2,7 @@ package com.example.foodtracking.Screens.TabScreens
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,6 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Categories(pagerState: PagerState, coroutineScope: CoroutineScope) {
-
     val categories = remember {
         listOf(
             Category("Pizza", "Italian dish with dough base, cheese, and toppings", R.drawable.pizza),
@@ -52,13 +52,9 @@ fun Categories(pagerState: PagerState, coroutineScope: CoroutineScope) {
             Category("Burger", "Meat patty in a bun, often with lettuce, tomato, and sauces", R.drawable.burger),
             Category("Pasta", "Versatile noodles served with a range of sauces and toppings from meats to vegetables", R.drawable.pasta),
             Category("Dumplings", "Small dough parcels filled with meat or vegetables, steamed, boiled, or fried", R.drawable.dumplings),
-            Category("Sweer", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
-            Category("Pizza", "Italian dish with dough base, cheese, and toppings", R.drawable.pizza),
-            Category("Sushi", "Vinegar-flavored rice with fish, vegetables, or egg", R.drawable.sushi),
-            Category("Burger", "Meat patty in a bun, often with lettuce, tomato, and sauces", R.drawable.burger),
-            Category("Pasta", "Versatile noodles served with a range of sauces and toppings from meats to vegetables", R.drawable.pasta),
-            Category("Dumplings", "Small dough parcels filled with meat or vegetables, steamed, boiled, or fried", R.drawable.dumplings),
-            Category("Sweer", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
+            Category("Sweet", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
+            Category("Salad", "Fresh, raw vegetables, often with a dressing, served as a side dish or main course", R.drawable.salad),
+            Category("Soup", "Hot or cold liquid food made by boiling meat, fish, or vegetables in stock or water", R.drawable.soup)
         )
     }
 

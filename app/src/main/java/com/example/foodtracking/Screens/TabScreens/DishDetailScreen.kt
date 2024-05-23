@@ -2,6 +2,7 @@ package com.example.foodtracking.Screens.TabScreens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.util.Log
 import android.widget.Toast
@@ -115,7 +116,6 @@ fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: 
                     Box(
                         contentAlignment = Alignment.CenterStart,
                     ){
-                        // Miniaturka pojawiająca się w TopAppBar
                         Image(
                             painter = rememberImagePainter(data = dish.imageRes),
                             contentDescription = "Mini Dish Image",
@@ -128,7 +128,7 @@ fun DishDetailScreen(dishId: Int?, navController: NavController, listViewModel: 
 
                         Text(
                             text = dish.name,
-                            style = MaterialTheme.typography.headlineLarge,
+                            style = MaterialTheme.typography.headlineMedium,
                             color = Color.Black,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.graphicsLayer {

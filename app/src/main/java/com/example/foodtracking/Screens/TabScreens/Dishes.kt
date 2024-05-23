@@ -67,8 +67,7 @@ fun Dishes(pagerState: PagerState, coroutineScope: CoroutineScope, navController
     val sharedPreferences = LocalContext.current.getSharedPreferences("FoodTracking", 0)
     val category = sharedPreferences.getString("category", "All") ?: "All"
     val dishes = remember {DishRepository.getDishes(category)}
-    val editor: SharedPreferences.Editor = sharedPreferences.edit()
-    editor.putString("category", "All").apply()
+
 
     Scaffold {
         FoodTrackingTheme {
@@ -113,6 +112,7 @@ fun RecipeListItem(dish: Dish, coroutineScope: CoroutineScope, pagerState: Pager
         elevation = CardDefaults.cardElevation(defaultElevation = 7.dp),
         onClick = {
             coroutineScope.launch {
+                Log.d("RecipeListItem", "Dish ID: ${dish.id}")
                 navController.navigate(Screen.DishDetailScreen.route + "/${dish.id}")
             }
         },

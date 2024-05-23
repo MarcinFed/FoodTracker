@@ -26,8 +26,9 @@ class CalendarRepository (
     }
 
     fun modifyCalendarItem(date: String, mealId: Int) {
+        calendarDao.deleteItem(date)
         val modifiedItem = CalendarItem(date, mealId)
-        calendarDao.update(modifiedItem)
+        calendarDao.insert(modifiedItem)
     }
 
     fun modifyCalendarItem(item: CalendarItem) {

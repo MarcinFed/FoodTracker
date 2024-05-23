@@ -58,7 +58,7 @@ fun PopUp(onDismiss: () -> Unit, listViewModel: ListViewModel, dish: Dish, calen
         for (ingredient in dish.ingredients) {
             listViewModel.addItem(ingredient.name, ingredient.amount, ingredient.unit, false)
         }
-        calendarViewModel.addCalendarItem(date, dish.id)
+        calendarViewModel.modifyCalendarItem(date, dish.id)
     }
 
     if (showPopup.value) {

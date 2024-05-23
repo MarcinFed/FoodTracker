@@ -128,7 +128,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(15.dp),
+                        .padding(top = 15.dp, start = 15.dp, end = 15.dp),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column {
