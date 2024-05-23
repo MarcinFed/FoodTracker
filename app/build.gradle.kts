@@ -91,4 +91,22 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
 
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
+
+    //Testing
+    implementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1@aar")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("org.mockito:mockito-core:4.0.0")
+    androidTestImplementation("org.mockito:mockito-inline:4.0.0")
+    androidTestImplementation("io.mockk:mockk-android:1.13.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    testImplementation("io.mockk:mockk-agent-jvm:1.13.9")
+    testImplementation("org.mockito:mockito-core:4.0.0") // Use the latest version
+    testImplementation("org.mockito:mockito-inline:4.0.0") // For mocking final classes
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2") // JUnit 5
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
