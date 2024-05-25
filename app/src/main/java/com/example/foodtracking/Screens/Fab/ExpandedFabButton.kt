@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.foodtracking.R
@@ -86,6 +87,7 @@ fun MultiFloatingActionButton(
                 fabState.value = fabState.value.toggleValue()
                 stateChanged(fabState.value)
             },
+            modifier = Modifier.testTag("main_fab_button"),
             backgroundColor = fabOption.backgroundTint,
             contentColor = fabOption.iconTint
         ) {
@@ -132,7 +134,7 @@ fun MiniFabItem(
         // FloatingActionButton representing the sub-item
         FloatingActionButton(
             onClick = { onFabItemClicked(item) },
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(40.dp).testTag(item.testTag),
             backgroundColor = fabOption.backgroundTint,
             contentColor = fabOption.iconTint,
         ) {

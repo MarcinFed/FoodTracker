@@ -221,7 +221,8 @@ fun ConfirmDeletionDialog(showDialog: Boolean, onDismiss: () -> Unit, confirmAct
             },
             confirmButton = {
                 TextButton(
-                    onClick = confirmAction
+                    onClick = confirmAction,
+                    modifier = Modifier.testTag("confirm_delete")
                 ) {
                     Text(
                         stringResource(id = R.string.confirm),
@@ -252,17 +253,20 @@ fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableSta
             FabButtonItem(
                 iconRes = Icons.Filled.Check,
                 label = stringResource(id = R.string.select),
-                id = 0
+                id = 0,
+                testTag = "select_all"
             ),
             FabButtonItem(
                 iconRes = Icons.Filled.Refresh,
                 label = stringResource(id = R.string.unselect),
-                id = 1
+                id = 1,
+                testTag = "unselect_all"
             ),
             FabButtonItem(
                 iconRes = Icons.Filled.Delete,
                 label = stringResource(id = R.string.delete),
-                id = 2
+                id = 2,
+                testTag = "delete_checked"
             ),
         ),
         onFabItemClicked = { item ->
@@ -311,6 +315,7 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
+            modifier = Modifier.testTag("Checkbox"),
             colors = CheckboxDefaults.colors(
                 checkedColor = Color(0xFF1683FB),
             ),
@@ -348,7 +353,6 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                     val (productName, amount, unit) = parseItemInput(itemText)
-                    Log.println(Log.INFO, "ShoppingListItem", "Product: $productName, Amount: $amount, Unit: $unit")
                     listViewModel.modifyItem(
                         productName,
                         amount,
