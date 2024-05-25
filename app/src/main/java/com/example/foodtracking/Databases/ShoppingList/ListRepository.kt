@@ -61,4 +61,8 @@ class ListRepository (
     fun itemsChecked() : Boolean{
         return listDao.itemsChecked() > 0
     }
+
+    fun getItem(productName: String): ListItem {
+        return listDao.getItem(productName)
+    }
 }

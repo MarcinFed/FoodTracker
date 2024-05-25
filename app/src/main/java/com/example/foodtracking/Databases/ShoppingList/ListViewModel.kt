@@ -57,6 +57,10 @@ class ListViewModel(
         return listRepository.itemsChecked()
     }
 
+    fun getItem(productName: String): ListItem {
+        return listRepository.getItem(productName)
+    }
+
 }
 
 class ListViewModelFactory(

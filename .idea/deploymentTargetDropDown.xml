@@ -2,20 +2,49 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="EndToEndTest">
-        <State />
-      </entry>
       <entry key="ListViewModelTest">
-        <State />
-      </entry>
-      <entry key="OverrideDishKtTest">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\izaim\.android\avd\Pixel_8_API_31.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-25T20:31:27.589596900Z" />
+        </State>
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="creatingAndSavingItemOnShoppingList()">
+      <entry key="delete_item_removes_from_repository()">
         <State />
+      </entry>
+      <entry key="insert_item_adds_to_repository()">
+        <State />
+      </entry>
+      <entry key="modify_item_updates_item_details()">
+        <State />
+      </entry>
+      <entry key="testSaveAndRetriveItem()">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\izaim\.android\avd\Pixel_8_API_31.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-05-25T20:30:32.382328800Z" />
+        </State>
       </entry>
     </value>
   </component>

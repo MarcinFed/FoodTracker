@@ -22,6 +22,10 @@ class ListItem : Serializable {
     }
 
     override fun equals(other: Any?): Boolean {
-        return super.equals(other)
+        return if (other is ListItem) {
+            this.Product == other.Product && this.Amount == other.Amount && this.Unit == other.Unit && this.Bought == other.Bought
+        } else {
+            false
+        }
     }
 }
