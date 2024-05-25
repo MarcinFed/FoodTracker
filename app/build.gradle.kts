@@ -6,6 +6,8 @@ plugins {
     id("kotlin-kapt")
 }
 
+android { packagingOptions { resources.excludes.add("META-INF/*") } }
+
 android {
     namespace = "com.example.foodtracking"
     compileSdk = 34
@@ -61,11 +63,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
+    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
@@ -92,9 +91,13 @@ dependencies {
 
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
 
-    //Testing
+    val composeBom = platform("androidx.compose:compose-bom:2024.03.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     implementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1@aar")
     androidTestImplementation("androidx.test:runner:1.5.2")
@@ -102,11 +105,11 @@ dependencies {
     androidTestImplementation("org.mockito:mockito-core:4.0.0")
     androidTestImplementation("org.mockito:mockito-inline:4.0.0")
     androidTestImplementation("io.mockk:mockk-android:1.13.9")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     testImplementation("io.mockk:mockk-agent-jvm:1.13.9")
     testImplementation("org.mockito:mockito-core:4.0.0") // Use the latest version
     testImplementation("org.mockito:mockito-inline:4.0.0") // For mocking final classes
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2") // JUnit 5
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.9")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

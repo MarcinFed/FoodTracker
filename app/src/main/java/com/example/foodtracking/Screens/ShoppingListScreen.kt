@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
@@ -56,8 +57,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -157,9 +160,13 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                                 width = 1.dp,
                                                 color = Color.Gray,
                                                 shape = RoundedCornerShape(8.dp)
-                                            ),
+                                            )
+                                            .testTag("AddNewItemTextField"),
                                         placeholder = { Text("Add new item") },
                                         singleLine = true,
+                                        keyboardOptions = KeyboardOptions(
+                                            imeAction = ImeAction.Done
+                                        ),
                                         maxLines = 1,
                                         textStyle = MaterialTheme.typography.bodyLarge,
                                         keyboardActions = KeyboardActions(onDone = {
@@ -335,6 +342,9 @@ fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSel
                 textStyle = MaterialTheme.typography.bodyLarge,
                 singleLine = true,
                 maxLines = 1,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
                     val (productName, amount, unit) = parseItemInput(itemText)

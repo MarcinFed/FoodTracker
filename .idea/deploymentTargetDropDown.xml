@@ -2,24 +2,20 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="EndToEndTest">
+        <State />
+      </entry>
       <entry key="ListViewModelTest">
         <State />
       </entry>
+      <entry key="OverrideDishKtTest">
+        <State />
+      </entry>
       <entry key="app">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="adb-c53638b0-UCFxNK._adb-tls-connect._tcp" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-05-23T11:10:37.243765500Z" />
-        </State>
+        <State />
+      </entry>
+      <entry key="creatingAndSavingItemOnShoppingList()">
+        <State />
       </entry>
     </value>
   </component>

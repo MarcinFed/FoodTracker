@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import com.example.foodtracking.R
+import androidx.compose.ui.Modifier
 
 @Composable
 fun ConfirmDishChangeDialog(
@@ -28,10 +30,10 @@ fun ConfirmDishChangeDialog(
                 onDismiss()
             },
             title = {
-                Text(text = "Confirm Change")
+                Text(text = "Confirm Change", modifier = Modifier.testTag("TitleConfirmChange"))
             },
             text = {
-                Text("Are you sure you want to change dish from $oldDishName to $newDishName on $date?")
+                Text("Are you sure you want to change dish from $oldDishName to $newDishName on $date?", modifier = Modifier.testTag("TextConfirmChange"))
             },
             confirmButton = {
                 Button(
@@ -39,9 +41,10 @@ fun ConfirmDishChangeDialog(
                         setShowDialog(false)
                         onConfirm()
                         onDismiss()
-                    }
+                    },
+                    modifier = Modifier.testTag("ButtonConfirm")
                 ) {
-                    Text("Confirm", color = colorResource(id = R.color.blue))
+                    Text("Confirm", color = colorResource(id = R.color.blue), modifier = Modifier.testTag("TextConfirm"))
                 }
             },
             dismissButton = {
@@ -49,9 +52,10 @@ fun ConfirmDishChangeDialog(
                     onClick = {
                         setShowDialog(false)
                         onDismiss()
-                    }
+                    },
+                    modifier = Modifier.testTag("ButtonCancel")
                 ) {
-                    Text("Cancel", color = Color.Black)
+                    Text("Cancel", color = Color.Black, modifier = Modifier.testTag("TextCancel"))
                 }
             }
         )

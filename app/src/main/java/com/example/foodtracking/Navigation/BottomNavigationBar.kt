@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
@@ -90,6 +91,7 @@ fun NavigationBarCard(navController: NavHostController, navBackStackEntry: NavBa
             BottomNavigationItem().bottomNavigationItems().forEachIndexed { _, navigationItem ->
                 val isSelected = navigationItem.route == currentDestination?.route
                 NavigationBarItem(
+                    modifier = Modifier.testTag(navigationItem.title),
                     icon = { BottomNavItem(navigationItem, isSelected) },
                     label = { Text(text = navigationItem.title) },
                     selected = isSelected,
