@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,24 +21,18 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
@@ -52,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -61,10 +53,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.foodtracking.Databases.ShoppingList.ListItem
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.R
@@ -75,6 +64,7 @@ import com.example.foodtracking.Screens.Fab.FabButtonSub
 import com.example.foodtracking.Screens.Fab.MultiFloatingActionButton
 import com.example.foodtracking.Screens.Fab.rememberMultiFabState
 import com.example.foodtracking.Screens.Keyboard.rememberKeyboardVisibilityState
+import com.example.foodtracking.Screens.PopUp.shoppingListItemsDelete
 import com.example.foodtracking.ui.theme.FoodTrackingTheme
 import com.example.foodtracking.ui.theme.MyTextField
 
@@ -114,7 +104,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
     }
 
     if (showDialog) {
-        ConfirmDeletionDialog(showDialog = showDialog, onDismiss = {showDialog = false}) {
+        shoppingListItemsDelete(showDialog = showDialog, onDismiss = { showDialog = false }) {
             listViewModel.deleteCheckedItems()
             showDialog = false
         }
@@ -126,7 +116,7 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
             MultiFloatingActionButton(listViewModel, fabState, setShowDialog, context, toastText)
         }
     ) {
-        Box(modifier = overlayModifier){
+        Box(modifier = overlayModifier) {
             FoodTrackingTheme {
                 Surface(
                     modifier = Modifier
@@ -137,7 +127,13 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                     Column {
                         LazyColumn {
                             itemsIndexed(shoppingList) { _, item ->
-                                ShoppingListItem(item, listViewModel, customTextSelectionColors, fabState, keyboardController)
+                                ShoppingListItem(
+                                    item,
+                                    listViewModel,
+                                    customTextSelectionColors,
+                                    fabState,
+                                    keyboardController
+                                )
                             }
                             item {
                                 CompositionLocalProvider(
@@ -172,7 +168,9 @@ fun ShoppingListScreen(listViewModel: ListViewModel) {
                                         keyboardActions = KeyboardActions(onDone = {
                                             keyboardController?.hide()
                                             if (newText.isNotBlank()) {
-                                                val (productName, amount, unit) = parseItemInput(newText)
+                                                val (productName, amount, unit) = parseItemInput(
+                                                    newText
+                                                )
                                                 listViewModel.addItem(
                                                     productName, amount, unit, false
                                                 )
@@ -200,7 +198,8 @@ fun parseItemInput(input: String): Triple<String, Float, String> {
         val quantityString = matchResult.groupValues[2]
         val unit = matchResult.groupValues[3].trim()
 
-        val quantity = quantityString.toFloatOrNull() ?: 1f // Ustawienie wartości domyślnej, jeśli konwersja na float zawiedzie
+        val quantity = quantityString.toFloatOrNull()
+            ?: 1f // Ustawienie wartości domyślnej, jeśli konwersja na float zawiedzie
         return Triple(productName, quantity, unit)
     }
 
@@ -209,44 +208,13 @@ fun parseItemInput(input: String): Triple<String, Float, String> {
 }
 
 @Composable
-fun ConfirmDeletionDialog(showDialog: Boolean, onDismiss: () -> Unit, confirmAction: () -> Unit){
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(text = stringResource(id = R.string.confirm_delete))
-            },
-            text = {
-                Text(text = stringResource(id = R.string.delete_text))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = confirmAction,
-                    modifier = Modifier.testTag("confirm_delete")
-                ) {
-                    Text(
-                        stringResource(id = R.string.confirm),
-                        color = colorResource(id = R.color.blue)
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = onDismiss
-
-                ) {
-                    Text(
-                        stringResource(id = R.string.cancel),
-                        color = Color.Black
-                    )
-                }
-            }
-        )
-    }
-}
-
-@Composable
-fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableState<FabButtonState>, setShowDialog: (Boolean) -> Unit, context: Context, toastText: String){
+fun MultiFloatingActionButton(
+    listViewModel: ListViewModel,
+    fabState: MutableState<FabButtonState>,
+    setShowDialog: (Boolean) -> Unit,
+    context: Context,
+    toastText: String
+) {
     MultiFloatingActionButton(
         modifier = Modifier.padding(end = 15.dp),
         items = listOf(
@@ -274,10 +242,12 @@ fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableSta
                 0 -> {
                     listViewModel.checkAllItems(bought = true)
                 }
+
                 1 -> {
                     listViewModel.checkAllItems(bought = false)
                     fabState.value = FabButtonState.Collapsed
                 }
+
                 2 -> {
                     if (listViewModel.itemsChecked())
                         setShowDialog(true)
@@ -285,6 +255,7 @@ fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableSta
                         Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                     fabState.value = FabButtonState.Collapsed
                 }
+
                 else -> Toast.makeText(context, item.label, Toast.LENGTH_SHORT).show()
             }
         },
@@ -295,13 +266,23 @@ fun MultiFloatingActionButton(listViewModel: ListViewModel, fabState: MutableSta
 }
 
 @Composable
-fun ShoppingListItem(item: ListItem, listViewModel: ListViewModel, customTextSelectionColors: TextSelectionColors, fabState: MutableState<FabButtonState>, keyboardController: SoftwareKeyboardController?) {
+fun ShoppingListItem(
+    item: ListItem,
+    listViewModel: ListViewModel,
+    customTextSelectionColors: TextSelectionColors,
+    fabState: MutableState<FabButtonState>,
+    keyboardController: SoftwareKeyboardController?
+) {
     var itemText by remember {
         mutableStateOf(
             if (item.Unit.isNotEmpty()) {
                 "${item.Product} ${item.Amount}${item.Unit}"
             } else {
-                Log.println(Log.INFO, "ShoppingListItem", "Product: ${item.Product}, Amount: ${item.Amount}, Unit: ${item.Unit}")
+                Log.println(
+                    Log.INFO,
+                    "ShoppingListItem",
+                    "Product: ${item.Product}, Amount: ${item.Amount}, Unit: ${item.Unit}"
+                )
                 if (item.Amount > 1) "${item.Product} x${item.Amount}" else item.Product
             }
         )

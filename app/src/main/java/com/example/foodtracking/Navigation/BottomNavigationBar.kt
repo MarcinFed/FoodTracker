@@ -46,7 +46,7 @@ fun BottomNavigationBar(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            if (currentDestination?.route != Screen.DishDetailScreen.route +"/{id}") {
+            if (currentDestination?.route != Screen.DishDetailScreen.route + "/{id}") {
                 NavigationBarCard(navController, navBackStackEntry, currentDestination)
             }
         }
@@ -54,27 +54,45 @@ fun BottomNavigationBar(
         NavHost(
             navController = navController,
             startDestination = Screen.RecipesScreen.route,
-            modifier = Modifier.padding(paddingValues = paddingValues)) {
+            modifier = Modifier.padding(paddingValues = paddingValues)
+        ) {
             composable(Screen.RecipesScreen.route) {
-                RecipesScreen(navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
+                RecipesScreen(
+                    navController = navController,
+                    listViewModel = listViewModel,
+                    calendarViewModel = calendarViewModel
+                )
             }
             composable(Screen.ShoppingListScreen.route) {
                 ShoppingListScreen(listViewModel)
             }
             composable(Screen.CalendarScreen.route) {
-                CalendarScreen(navController = navController, calendarViewModel = calendarViewModel)
+                CalendarScreen(
+                    navController = navController,
+                    calendarViewModel = calendarViewModel,
+                    listViewModel = listViewModel
+                )
             }
             composable(route = Screen.DishDetailScreen.route + "/{id}") { backStackEntry ->
                 val dishId = backStackEntry.arguments?.getString("id")?.toIntOrNull()
                 Log.d("DishDetailScreen", "Dish id: $dishId")
-                DishDetailScreen(dishId = dishId, navController = navController, listViewModel = listViewModel, calendarViewModel = calendarViewModel)
+                DishDetailScreen(
+                    dishId = dishId,
+                    navController = navController,
+                    listViewModel = listViewModel,
+                    calendarViewModel = calendarViewModel
+                )
             }
         }
     }
 }
 
 @Composable
-fun NavigationBarCard(navController: NavHostController, navBackStackEntry: NavBackStackEntry?, currentDestination: NavDestination?) {
+fun NavigationBarCard(
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry?,
+    currentDestination: NavDestination?
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

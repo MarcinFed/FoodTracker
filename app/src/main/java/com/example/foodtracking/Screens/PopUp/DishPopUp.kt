@@ -3,7 +3,6 @@ package com.example.foodtracking.Screens.PopUp
 import ConfirmDishChangeDialog
 import android.app.DatePickerDialog
 import android.media.MediaPlayer
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -32,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.Food.Dish
 import com.example.foodtracking.Databases.Food.DishRepository
-import com.example.foodtracking.Databases.ShoppingList.ListItem
 import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.R
 import java.util.Calendar

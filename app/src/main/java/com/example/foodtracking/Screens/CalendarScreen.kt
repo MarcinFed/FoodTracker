@@ -2,30 +2,13 @@ package com.example.foodtracking.Screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,36 +22,32 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.example.foodtracking.Databases.Calendar.CalendarViewModel
 import com.example.foodtracking.Databases.Food.DishRepository
+import com.example.foodtracking.Databases.ShoppingList.ListViewModel
 import com.example.foodtracking.Navigation.Screen
 import com.example.foodtracking.R
+import com.example.foodtracking.Screens.PopUp.ConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 @SuppressLint("SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
     navController: NavController,
-    calendarViewModel: CalendarViewModel
+    calendarViewModel: CalendarViewModel,
+    listViewModel: ListViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
-
-    // Ustawienie dzisiejszej daty jako domyślnej
     val today = remember { SimpleDateFormat("dd/MM/yyyy").format(Date()) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = Date().time)
+    var mealId by remember { mutableIntStateOf(-1) }
+    var date by remember { mutableStateOf(today) }
 
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        SimpleDateFormat("dd/MM/yyyy").format(it)
-    }
-    var mealId by remember { mutableStateOf(-1) }
-    val selectedDateDisplay = datePickerState.selectedDateMillis?.let {
-        SimpleDateFormat("MMM dd", Locale.ENGLISH).format(it)
-    }
-
-    LaunchedEffect(selectedDate) {
-        selectedDate?.let { date ->
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let { dateMillis ->
+            date = SimpleDateFormat("dd/MM/yyyy").format(dateMillis)
             coroutineScope.launch {
                 val calendarItem = calendarViewModel.getCalendarItem(date)
                 mealId = calendarItem?.mealId ?: -1
@@ -77,40 +56,15 @@ fun CalendarScreen(
     }
 
     Column {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 27.dp)
-                .height(400.dp),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 7.dp,
-                pressedElevation = 7.dp
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ) {
-            DatePicker(
-                state = datePickerState,
-                showModeToggle = false,
-                title = null,
-                headline = null,
-                colors = DatePickerDefaults.colors(
-                    containerColor = Color.White,
-                    todayContentColor = colorResource(id = R.color.blue),
-                    dayContentColor = Color.Black,
-                    todayDateBorderColor = colorResource(id = R.color.blue),
-                    selectedDayContentColor = Color.White,
-                    selectedDayContainerColor = colorResource(id = R.color.blue),
-                ),
-            )
-        }
+        CalendarCard(datePickerState)
+        val selectedDateDisplay = datePickerState.selectedDateMillis?.let {
+            SimpleDateFormat("MMM dd", Locale.ENGLISH).format(it)
+        } ?: "selected day"
+
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 8.dp, horizontal = 27.dp)
-                .align(Alignment.CenterHorizontally),
+                .padding(start = 27.dp, end = 27.dp, top = 8.dp, bottom = 16.dp),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 7.dp,
@@ -127,12 +81,10 @@ fun CalendarScreen(
                 }
             }
         ) {
-            Box(
-                modifier = Modifier.padding(16.dp)
-            ) {
+            Box(modifier = Modifier.padding(16.dp)) {
                 if (mealId == -1) {
                     Text(
-                        text = "You haven't yet selected a dish for ${selectedDateDisplay ?: "selected day"}",
+                        text = "You haven't yet selected a dish for $selectedDateDisplay",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight(500),
                         textAlign = TextAlign.Center,
@@ -140,39 +92,73 @@ fun CalendarScreen(
                         color = Color.Black
                     )
                 } else {
-                    Column {
-                        Text(
-                            text = "Dish for ${selectedDateDisplay ?: "selected day"}",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight(500),
-                            color = Color.Black
+                    var showDialog by remember { mutableStateOf(false) }
+                    if (showDialog) {
+                        ConfirmationDialog(
+                            onConfirm = {
+                                calendarViewModel.deleteCalendarItem(date)
+                                val dish = DishRepository.getDish(mealId)
+                                dish?.ingredients?.forEach { ingredient ->
+                                    listViewModel.substractItem(
+                                        ingredient.name,
+                                        ingredient.amount,
+                                        ingredient.unit,
+                                        false
+                                    )
+                                }
+                                mealId = -1
+                                showDialog = false
+                            },
+                            onDismiss = { showDialog = false },
+                            dish = DishRepository.getDish(mealId)?.name ?: "",
+                            date = selectedDateDisplay
                         )
-                        DishRepository.getDish(mealId)?.let { dish ->
-                            Column {
-                                Spacer(modifier = Modifier.size(16.dp))
-                                Image(
-                                    painter = rememberImagePainter(dish.imageRes),
-                                    contentDescription = "Dish Image",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(150.dp)
-                                        .clip(RoundedCornerShape(16.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
-                                Spacer(modifier = Modifier.size(8.dp))
+                    }
+
+                    DishRepository.getDish(mealId)?.let { dish ->
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text(
-                                    dish.name,
+                                    text = "Dish for $selectedDateDisplay",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight(500),
                                     color = Color.Black,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight(500)
+                                    modifier = Modifier.weight(1f)
                                 )
-                                Spacer(modifier = Modifier.size(16.dp))
-                                Text(
-                                    dish.description,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                IconButton(onClick = { showDialog = true }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Delete,
+                                        contentDescription = "Delete",
+                                        tint = Color.Black
+                                    )
+                                }
                             }
+                            Spacer(modifier = Modifier.size(16.dp))
+                            Image(
+                                painter = rememberImagePainter(dish.imageRes),
+                                contentDescription = "Dish Image",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text(
+                                dish.name,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.headlineSmall,
+                                fontWeight = FontWeight(500)
+                            )
+                            Spacer(modifier = Modifier.size(16.dp))
+                            Text(
+                                dish.description,
+                                color = Color.Black,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
@@ -181,3 +167,38 @@ fun CalendarScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalendarCard(
+    datePickerState: DatePickerState
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 27.dp)
+            .height(400.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 7.dp,
+            pressedElevation = 7.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
+    ) {
+        DatePicker(
+            state = datePickerState,
+            showModeToggle = false,
+            title = null,
+            headline = null,
+            colors = DatePickerDefaults.colors(
+                containerColor = Color.White,
+                todayContentColor = colorResource(id = R.color.blue),
+                dayContentColor = Color.Black,
+                todayDateBorderColor = colorResource(id = R.color.blue),
+                selectedDayContentColor = Color.White,
+                selectedDayContainerColor = colorResource(id = R.color.blue),
+            ),
+        )
+    }
+}
