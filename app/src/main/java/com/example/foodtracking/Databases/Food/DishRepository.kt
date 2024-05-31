@@ -376,8 +376,7 @@ object DishRepository {
                 Ingredient(name = "Pepper", amount = 2f, unit = "g")
             )
         )
-    )
-
+    ).sortedBy { it.name }
     fun getDishes(category: String): List<Dish> {
         if (category == "All") return dishes
         return dishes.filter {

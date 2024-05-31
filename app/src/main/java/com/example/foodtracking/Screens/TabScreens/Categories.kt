@@ -55,7 +55,7 @@ fun Categories(pagerState: PagerState, coroutineScope: CoroutineScope) {
             Category("Sweet", "Delightful sweet treats from fluffy pancakes to rich waffles, often topped with syrup, fruits, and whipped cream", R.drawable.sweet),
             Category("Salad", "Fresh, raw vegetables, often with a dressing, served as a side dish or main course", R.drawable.salad),
             Category("Soup", "Hot or cold liquid food made by boiling meat, fish, or vegetables in stock or water", R.drawable.soup)
-        )
+        ).sortedBy { it.name }
     }
 
     Scaffold {
