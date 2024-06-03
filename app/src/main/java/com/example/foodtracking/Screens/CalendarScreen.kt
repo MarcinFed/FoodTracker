@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +36,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    navController: NavController,
+    navController: NavController?,
     calendarViewModel: CalendarViewModel,
     listViewModel: ListViewModel
 ) {
@@ -76,7 +77,7 @@ fun CalendarScreen(
             onClick = {
                 coroutineScope.launch {
                     if (mealId != -1) {
-                        navController.navigate(Screen.DishDetailScreen.route + "/$mealId")
+                        navController!!.navigate(Screen.DishDetailScreen.route + "/$mealId")
                     }
                 }
             }
@@ -88,7 +89,9 @@ fun CalendarScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight(500),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("noDishSelected"),
                         color = Color.Black
                     )
                 } else {
@@ -126,38 +129,44 @@ fun CalendarScreen(
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight(500),
                                     color = Color.Black,
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("dishForDate"),
                                 )
-                                IconButton(onClick = { showDialog = true }) {
+                                IconButton(onClick = { showDialog = true }, modifier = Modifier.testTag("moreOptions")) {
                                     Icon(
                                         imageVector = Icons.Filled.Delete,
                                         contentDescription = "Delete",
-                                        tint = Color.Black
+                                        tint = Color.Black,
+                                        modifier = Modifier.testTag("deleteDish")
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.size(16.dp).testTag("spacer1"))
                             Image(
                                 painter = rememberImagePainter(dish.imageRes),
                                 contentDescription = "Dish Image",
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(150.dp)
-                                    .clip(RoundedCornerShape(16.dp)),
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .testTag("dishImage"),
                                 contentScale = ContentScale.Crop
                             )
-                            Spacer(modifier = Modifier.size(8.dp))
+                            Spacer(modifier = Modifier.size(8.dp).testTag("spacer2"))
                             Text(
                                 dish.name,
                                 color = Color.Black,
                                 style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight(500)
+                                fontWeight = FontWeight(500),
+                                modifier = Modifier.testTag("dishName")
                             )
-                            Spacer(modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.size(16.dp).testTag("spacer3"))
                             Text(
                                 dish.description,
                                 color = Color.Black,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.testTag("dishDescription")
                             )
                         }
                     }
@@ -176,7 +185,8 @@ fun CalendarCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 27.dp)
-            .height(400.dp),
+            .height(400.dp)
+            .testTag("calendarCard"),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 7.dp,
@@ -199,6 +209,7 @@ fun CalendarCard(
                 selectedDayContentColor = Color.White,
                 selectedDayContainerColor = colorResource(id = R.color.blue),
             ),
+            modifier = Modifier.testTag("datePicker")
         )
     }
 }
