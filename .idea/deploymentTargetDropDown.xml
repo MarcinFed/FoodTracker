@@ -2,6 +2,12 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="CalendarScreenKtTest">
+        <State />
+      </entry>
+      <entry key="CalendarScreenWithDishKtTest">
+        <State />
+      </entry>
       <entry key="ListViewModelTest">
         <State>
           <targetSelectedWithDropDown>
@@ -21,15 +27,6 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="delete_item_removes_from_repository()">
-        <State />
-      </entry>
-      <entry key="insert_item_adds_to_repository()">
-        <State />
-      </entry>
-      <entry key="modify_item_updates_item_details()">
-        <State />
-      </entry>
       <entry key="testSaveAndRetriveItem()">
         <State>
           <targetSelectedWithDropDown>
@@ -45,6 +42,9 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-05-25T20:30:32.382328800Z" />
         </State>
+      </entry>
+      <entry key="verifyIfAllViewsAreDisplayed()">
+        <State />
       </entry>
     </value>
   </component>

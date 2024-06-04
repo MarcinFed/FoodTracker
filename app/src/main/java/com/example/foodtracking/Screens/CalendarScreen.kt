@@ -65,7 +65,8 @@ fun CalendarScreen(
         Card(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 27.dp, end = 27.dp, top = 8.dp, bottom = 16.dp),
+                .padding(start = 27.dp, end = 27.dp, top = 8.dp, bottom = 16.dp)
+                .testTag("dishCard"),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 7.dp,
@@ -75,10 +76,9 @@ fun CalendarScreen(
                 containerColor = Color.White
             ),
             onClick = {
-                coroutineScope.launch {
-                    if (mealId != -1) {
-                        navController!!.navigate(Screen.DishDetailScreen.route + "/$mealId")
-                    }
+                when (mealId) {
+                    -1 -> null
+                    else ->  coroutineScope.launch {navController!!.navigate(Screen.DishDetailScreen.route + "/$mealId")}
                 }
             }
         ) {
@@ -131,7 +131,7 @@ fun CalendarScreen(
                                     color = Color.Black,
                                     modifier = Modifier
                                         .weight(1f)
-                                        .testTag("dishForDate"),
+                                        .testTag("dishSelected"),
                                 )
                                 IconButton(onClick = { showDialog = true }, modifier = Modifier.testTag("moreOptions")) {
                                     Icon(
