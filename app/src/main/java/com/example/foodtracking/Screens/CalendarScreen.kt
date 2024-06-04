@@ -100,14 +100,16 @@ fun CalendarScreen(
                         ConfirmationDialog(
                             onConfirm = {
                                 calendarViewModel.deleteCalendarItem(date)
-                                val dish = DishRepository.getDish(mealId)
-                                dish?.ingredients?.forEach { ingredient ->
-                                    listViewModel.substractItem(
-                                        ingredient.name,
-                                        ingredient.amount,
-                                        ingredient.unit,
-                                        false
-                                    )
+                                if(date >= today) {
+                                    val dish = DishRepository.getDish(mealId)
+                                    dish?.ingredients?.forEach { ingredient ->
+                                        listViewModel.substractItem(
+                                            ingredient.name,
+                                            ingredient.amount,
+                                            ingredient.unit,
+                                            false
+                                        )
+                                    }
                                 }
                                 mealId = -1
                                 showDialog = false
